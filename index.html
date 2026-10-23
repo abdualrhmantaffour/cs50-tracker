@@ -1700,17 +1700,20 @@
             const syncText = document.getElementById('sync-text');
             const syncDot = document.getElementById('sync-dot');
             try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    const app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
+                const firebaseConfig = {
+            apiKey: "AIzaSyDKxlvGe9FC4Kfa9sL5UiZDWGm86TIVkjA",
+            authDomain: "cs50-tracker.firebaseapp.com",
+            projectId: "cs50-tracker",
+            storageBucket: "cs50-tracker.firebasestorage.app",
+            messagingSenderId: "902122591875",
+            appId: "1:902122591875:web:a293ae51944db34375edb6",
+            measurementId: "G-QFZ2KD15T3"
+        };
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
 
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
+        await signInAnonymously(auth);
 
                     onAuthStateChanged(auth, async (user) => {
                         if (user) {
