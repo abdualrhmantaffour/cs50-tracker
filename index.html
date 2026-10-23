@@ -1008,7 +1008,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         // ==========================================
         // 1. COMPLETE CS50x OPENCOURSEWARE CURRICULUM
@@ -1696,7 +1696,50 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'cs50-gamified-tracker';
         let db = null, auth = null, currentUserId = null, cloudSaveTimer = null;
 
-        async function initFirebaseSync() {
+        let unsubscribeSnapshot = null;
+
+    // دالة لاستخراج اسم حساب جيت هب وتوحيد حالته (أحرف صغيرة) ليكون المعرّف المشترك
+    function getSyncId() {
+        const ghUser = (
+            appState?.githubUsername || 
+            appState?.github || 
+            appState?.username || 
+            appState?.accounts?.github || 
+            localStorage.getItem('cs50_github_user') || 
+            ''
+        ).trim().toLowerCase();
+        
+        return ghUser || currentUserId;
+    }
+
+    // دالة المراقبة اللحظية: تجلب التعديلات فور حدوثها على أي جهاز آخر
+    function setupRealtimeSync() {
+        const syncId = getSyncId();
+        if (!db || !syncId) return;
+
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
+
+        const syncText = document.getElementById('sync-text');
+        const syncDot = document.getElementById('sync-dot');
+        const docRef = doc(db, 'artifacts', appId, 'users', syncId, 'data', 'progress');
+
+        unsubscribeSnapshot = onSnapshot(docRef, (snap) => {
+            if (snap.exists()) {
+                const cloudData = snap.data();
+                // تحديث البيانات محلياً وفي الواجهة فور وصولها من السحابة
+                appState = { ...appState, ...cloudData };
+                saveLocal();
+                if (typeof applyTheme === 'function') applyTheme();
+                if (typeof renderLevels === 'function') renderLevels();
+                if (typeof updateActivityRings === 'function') updateActivityRings();
+                if (typeof renderCurrentLevel === 'function') renderCurrentLevel();
+            }
+            if (syncText) syncText.textContent = 'متصل ومزامن (' + syncId + ')';
+            if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
+        });
+    }
+
+    async function initFirebaseSync() {
         const syncText = document.getElementById('sync-text');
         const syncDot = document.getElementById('sync-dot');
         try {
@@ -1719,19 +1762,7 @@
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     currentUserId = user.uid;
-                    if (syncText) syncText.textContent = 'الحفظ التلقائي مفعّل';
-                    if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
-
-                    const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'data', 'progress');
-                    const snap = await getDoc(docRef);
-                    if (snap.exists()) {
-                        const cloudData = snap.data();
-                        appState = { ...appState, ...cloudData };
-                        saveLocal();
-                        applyTheme();
-                        renderLevels();
-                        updateActivityRings();
-                    }
+                    setupRealtimeSync();
                 }
             });
         } catch (error) {
@@ -1741,11 +1772,34 @@
         }
     }
 
-        function saveLocal() {
-            try {
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appState));
-            } catch (e) {}
-        }
+    function saveLocal() {
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appState));
+        } catch (e) {}
+    }
+
+    function persistState() {
+        saveLocal();
+        clearTimeout(cloudSaveTimer);
+        cloudSaveTimer = setTimeout(async () => {
+            const syncId = getSyncId();
+            if (db && syncId) {
+                const syncText = document.getElementById('sync-text');
+                try {
+                    if (syncText) syncText.textContent = 'جاري الحفظ...';
+                    const docRef = doc(db, 'artifacts', appId, 'users', syncId, 'data', 'progress');
+                    await setDoc(docRef, appState, { merge: true });
+                    if (syncText) syncText.textContent = 'تم الحفظ (' + syncId + ')';
+                    
+                    // إعادة تفعيل المراقب في حال قام المستخدم بتغيير اسم حسابه للتو
+                    setupRealtimeSync();
+                } catch (e) {
+                    console.error("Cloud save error:", e);
+                    if (syncText) syncText.textContent = 'خطأ في الحفظ';
+                }
+            }
+        }, 500);
+    }
 
         function persistState() {
             saveLocal();
