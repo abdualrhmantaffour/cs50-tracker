@@ -1,0 +1,2611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS50x Studio — منصة التتبع التعليمي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            bgLight: '#F5F5F7',
+                            bgDark: '#000000',
+                            cardLight: '#FFFFFF',
+                            cardDark: '#1C1C1E',
+                            elevatedDark: '#2C2C2E',
+                            textLight: '#1D1D1F',
+                            textDark: '#F5F5F7',
+                            secondary: '#86868B',
+                            blue: '#0071E3',
+                            blueDark: '#0A84FF',
+                            green: '#34C759',
+                            orange: '#FF9500',
+                            purple: '#AF52DE',
+                            red: '#FF3B30',
+                            teal: '#5AC8FA'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Arabic', 'Tajawal', 'sans-serif'],
+                        mono: ['SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.78);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        html.dark {
+            --glass-bg: rgba(28, 28, 30, 0.78);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Tajawal', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), color 0.3s ease;
+        }
+
+        .apple-glass {
+            background: var(--glass-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-color: var(--glass-border);
+        }
+
+        .apple-card {
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--glass-border);
+            transition: transform 0.22s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+        }
+
+        .apple-card-hover:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Apple Custom Checkbox */
+        .apple-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #C7C7CC;
+            background-color: transparent;
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+        }
+
+        html.dark .apple-checkbox {
+            border-color: #48484A;
+        }
+
+        .apple-checkbox:hover {
+            border-color: #0071E3;
+        }
+
+        .apple-checkbox:checked {
+            background-color: #34C759;
+            border-color: #34C759;
+            transform: scale(1.03);
+        }
+
+        .apple-checkbox::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 11px;
+            color: white;
+            transform: scale(0);
+            transition: 0.18s transform cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .apple-checkbox:checked::before {
+            transform: scale(1);
+        }
+
+        /* Rounded Square Checkbox for Sub-tasks */
+        .apple-subcheck {
+            border-radius: 7px;
+            width: 20px;
+            height: 20px;
+        }
+        .apple-subcheck:checked {
+            background-color: #0071E3;
+            border-color: #0071E3;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(134, 134, 139, 0.3);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(134, 134, 139, 0.5);
+        }
+
+        /* Progress Ring Animation */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-apple-bgLight dark:bg-apple-bgDark text-apple-textLight dark:text-apple-textDark min-h-screen flex flex-col selection:bg-apple-blue selection:text-white">
+
+    <!-- Top Apple macOS/iPadOS Navigation Bar -->
+    <header class="sticky top-0 z-40 apple-glass border-b px-4 lg:px-8 py-3">
+        <div class="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand & Course Title -->
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-apple-blue to-blue-700 flex items-center justify-center text-white shadow-md shadow-apple-blue/20">
+                    <i class="fas fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-lg font-extrabold tracking-tight">CS50x Studio</h1>
+                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-blueDark/20 dark:text-apple-blueDark">
+                            OpenCourseWare
+                        </span>
+                    </div>
+                    <p class="text-xs text-apple-secondary hidden sm:block">مسار جامعة هارفارد لعلوم الحاسوب — نظام المستويات التفاعلي</p>
+                </div>
+            </div>
+
+            <!-- Quick Official Platform Pills (No edX!) -->
+            <div class="hidden xl:flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-black/5 dark:border-white/5">
+                <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener noreferrer"
+                   class="px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-white dark:hover:bg-apple-elevatedDark transition flex items-center gap-1.5">
+                    <i class="fas fa-globe text-apple-blue"></i> الموقع الرسمي CS50x
+                </a>
+                <a href="https://cs50.dev/" target="_blank" rel="noopener noreferrer"
+                   class="px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-white dark:hover:bg-apple-elevatedDark transition flex items-center gap-1.5">
+                    <i class="fas fa-laptop-code text-apple-purple"></i> بيئة الأكواد cs50.dev
+                </a>
+                <a href="https://cs50.me/cs50x" target="_blank" rel="noopener noreferrer"
+                   class="px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-white dark:hover:bg-apple-elevatedDark transition flex items-center gap-1.5">
+                    <i class="fas fa-chart-pie text-apple-green"></i> سجل الدرجات cs50.me
+                </a>
+                <a href="https://submit.cs50.io/" target="_blank" rel="noopener noreferrer"
+                   class="px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-white dark:hover:bg-apple-elevatedDark transition flex items-center gap-1.5">
+                    <i class="fas fa-cloud-arrow-up text-apple-orange"></i> منصة التسليم Submit
+                </a>
+            </div>
+
+            <!-- Right Controls: Stats Pill, Accounts Button, Theme Toggle -->
+            <div class="flex items-center gap-2.5">
+                <!-- Sync Indicator -->
+                <div id="sync-badge" class="hidden sm:flex items-center gap-1.5 text-xs text-apple-secondary px-2.5 py-1.5 rounded-full bg-black/5 dark:bg-white/5">
+                    <span id="sync-dot" class="w-2 h-2 rounded-full bg-gray-400"></span>
+                    <span id="sync-text">جاري الاتصال...</span>
+                </div>
+
+                <!-- XP & Level Pill -->
+                <div class="flex items-center gap-3 bg-white dark:bg-apple-cardDark px-3.5 py-1.5 rounded-full apple-card">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-6 h-6 rounded-full bg-apple-orange/15 text-apple-orange flex items-center justify-center text-xs font-bold">
+                            <i class="fas fa-bolt"></i>
+                        </span>
+                        <span id="header-xp" class="text-sm font-extrabold font-mono">0 XP</span>
+                    </div>
+                    <div class="h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
+                    <span id="header-rank" class="text-xs font-bold text-apple-blue dark:text-apple-blueDark">المستوى 0</span>
+                </div>
+
+                <!-- Onboarding Guide Re-open Button -->
+                <button onclick="openOnboardingModal('choice')" class="px-3 py-2 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-xs font-bold transition flex items-center gap-1.5" title="دليل التسجيل والبداية في CS50x">
+                    <i class="fas fa-compass text-apple-blue dark:text-apple-blueDark text-sm"></i>
+                    <span class="hidden lg:inline">دليل التسجيل والبداية</span>
+                </button>
+
+                <!-- Accounts & Settings Modal Button -->
+                <button onclick="openAccountsModal()" class="px-3.5 py-2 rounded-full bg-apple-blue hover:bg-blue-600 text-white text-xs font-bold transition flex items-center gap-2 shadow-sm shadow-apple-blue/25">
+                    <img id="header-avatar" src="" alt="Avatar" class="w-5 h-5 rounded-full hidden border border-white/20" onerror="this.classList.add('hidden'); document.getElementById('header-icon').classList.remove('hidden');">
+                    <i id="header-icon" class="fab fa-github text-sm"></i>
+                    <span id="header-github-label" class="hidden md:inline">حساباتي ومنصات CS50</span>
+                </button>
+
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()" id="theme-toggle-btn" title="تبديل المظهر"
+                        class="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 flex items-center justify-center transition">
+                    <i class="fas fa-moon text-sm dark:hidden text-gray-700"></i>
+                    <i class="fas fa-sun text-sm hidden dark:inline text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <div class="max-w-[1440px] w-full mx-auto px-4 lg:px-8 py-6 flex-grow flex flex-col lg:flex-row gap-6">
+
+        <!-- Left/Right RTL Sidebar: Overall Rings + Levels Map -->
+        <aside class="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-5">
+            
+            <!-- Apple Fitness Style Activity & Course Progress Card -->
+            <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-5 apple-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-base font-extrabold">حلقات الإنجاز</h2>
+                        <p class="text-xs text-apple-secondary">تقدمك الكلي في CS50x</p>
+                    </div>
+                    <span id="overall-percentage-badge" class="text-sm font-black px-2.5 py-1 rounded-full bg-apple-green/15 text-apple-green font-mono">
+                        0%
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-5">
+                    <!-- SVG Concentric Apple Activity Rings -->
+                    <div class="relative w-24 h-24 flex-shrink-0 flex items-center justify-center">
+                        <svg class="w-24 h-24" viewBox="0 0 100 100">
+                            <!-- Outer Ring: Checkpoints (Red/Pink) -->
+                            <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="7" fill="transparent" class="text-apple-red/15" />
+                            <circle id="ring-checkpoints" cx="50" cy="50" r="42" stroke="#FF3B30" stroke-width="7" fill="transparent"
+                                    stroke-linecap="round" stroke-dasharray="263.89" stroke-dashoffset="263.89" class="progress-ring__circle" />
+                            <!-- Middle Ring: Problem Sets (Green) -->
+                            <circle cx="50" cy="50" r="32" stroke="currentColor" stroke-width="7" fill="transparent" class="text-apple-green/15" />
+                            <circle id="ring-psets" cx="50" cy="50" r="32" stroke="#34C759" stroke-width="7" fill="transparent"
+                                    stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="201.06" class="progress-ring__circle" />
+                            <!-- Inner Ring: Requirements Details (Blue) -->
+                            <circle cx="50" cy="50" r="22" stroke="currentColor" stroke-width="7" fill="transparent" class="text-apple-blue/15" />
+                            <circle id="ring-reqs" cx="50" cy="50" r="22" stroke="#0071E3" stroke-width="7" fill="transparent"
+                                    stroke-linecap="round" stroke-dasharray="138.23" stroke-dashoffset="138.23" class="progress-ring__circle" />
+                        </svg>
+                    </div>
+
+                    <!-- Rings Legend -->
+                    <div class="flex-grow space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span class="w-2.5 h-2.5 rounded-full bg-apple-red"></span> نقاط التفتيش
+                            </span>
+                            <span id="stat-checkpoints" class="font-mono font-bold text-apple-secondary">0/0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span class="w-2.5 h-2.5 rounded-full bg-apple-green"></span> الوظائف (Psets)
+                            </span>
+                            <span id="stat-psets" class="font-mono font-bold text-apple-secondary">0/0</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span class="w-2.5 h-2.5 rounded-full bg-apple-blue"></span> متطلبات الكود
+                            </span>
+                            <span id="stat-reqs" class="font-mono font-bold text-apple-secondary">0/0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lock Mode Toggle -->
+                <div class="mt-4 pt-3.5 border-t border-gray-100 dark:border-white/10 flex items-center justify-between text-xs">
+                    <span class="text-apple-secondary flex items-center gap-1.5">
+                        <i class="fas fa-gamepad text-apple-purple"></i> نظام قفل المستويات المتسلسل
+                    </span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="strict-lock-toggle" class="sr-only peer" onchange="toggleStrictLockMode(this.checked)">
+                        <div class="w-9 h-5 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-apple-green"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Levels Navigation List (Weeks 0 to 10) -->
+            <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-3 apple-card flex-grow flex flex-col">
+                <div class="px-3 py-2 flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-apple-secondary">خريطة المستويات (الأسابيع)</h3>
+                    <span class="text-[11px] text-apple-secondary">11 مستوى</span>
+                </div>
+                <div id="levels-nav-list" class="space-y-1.5 overflow-y-auto max-h-[580px] pr-1">
+                    <!-- Levels dynamically rendered here -->
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Main Active Level Content Area -->
+        <main class="flex-grow flex flex-col gap-6 min-w-0">
+
+            <!-- Level Hero Header Card -->
+            <div id="level-hero-card" class="bg-white dark:bg-apple-cardDark rounded-3xl p-6 lg:p-8 apple-card relative overflow-hidden">
+                <!-- Subtle Decorative Gradient Blob -->
+                <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-gradient-to-br from-apple-blue/15 to-apple-purple/10 blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="space-y-2.5 max-w-2xl">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="active-level-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-apple-blue text-white">
+                                المستوى 0 • Week 0
+                            </span>
+                            <span id="active-level-status" class="px-3 py-1 rounded-full text-xs font-bold bg-apple-green/15 text-apple-green">
+                                متاح للدراسة
+                            </span>
+                            <span id="active-level-xp-badge" class="px-2.5 py-1 rounded-full text-xs font-mono font-semibold bg-black/5 dark:bg-white/10">
+                                +150 XP
+                            </span>
+                        </div>
+                        <h2 id="active-level-title" class="text-2xl lg:text-3xl font-black tracking-tight">Scratch — التفكير الحاسوبي</h2>
+                        <p id="active-level-desc" class="text-sm text-apple-secondary leading-relaxed"></p>
+                        
+                        <!-- Concept Tags -->
+                        <div id="active-level-topics" class="flex flex-wrap gap-1.5 pt-1"></div>
+                    </div>
+
+                    <!-- Level Completion Circular Widget & Official Week Link -->
+                    <div class="flex sm:flex-row md:flex-col items-center md:items-end justify-between gap-4 flex-shrink-0 border-t md:border-t-0 pt-4 md:pt-0 border-gray-100 dark:border-white/10">
+                        <div class="text-right md:text-left">
+                            <div class="text-xs text-apple-secondary mb-1">إنجاز المستوى الحالي</div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-32 bg-gray-200 dark:bg-white/10 h-2.5 rounded-full overflow-hidden">
+                                    <div id="active-level-progress-bar" class="bg-apple-blue h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                                <span id="active-level-progress-text" class="font-mono font-extrabold text-sm">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <a id="active-level-official-link" href="https://cs50.harvard.edu/x/weeks/0/" target="_blank" rel="noopener noreferrer"
+                               class="px-4 py-2 rounded-2xl bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-xs font-bold transition flex items-center gap-2">
+                                <span>صفحة الأسبوع في هارفارد</span>
+                                <i class="fas fa-arrow-up-left-from-square text-[11px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Apple Segmented Control (Tabs) -->
+                <div class="mt-7 pt-5 border-t border-gray-100 dark:border-white/10">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 bg-apple-bgLight dark:bg-black/60 p-1.5 rounded-2xl">
+                        <button onclick="switchTab('lecture')" id="tab-btn-lecture"
+                                class="tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-white dark:bg-apple-elevatedDark shadow-sm">
+                            <i class="fab fa-youtube text-apple-red text-sm"></i>
+                            <span>المحاضرة والملفات</span>
+                        </button>
+                        <button onclick="switchTab('checkpoints')" id="tab-btn-checkpoints"
+                                class="tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-apple-secondary hover:text-apple-textLight dark:hover:text-white">
+                            <i class="fas fa-list-check text-apple-orange text-sm"></i>
+                            <span>نقاط التفتيش</span>
+                            <span id="tab-badge-checkpoints" class="px-1.5 py-0.2 rounded-full text-[10px] bg-black/5 dark:bg-white/10 font-mono">0/5</span>
+                        </button>
+                        <button onclick="switchTab('psets')" id="tab-btn-psets"
+                                class="tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-apple-secondary hover:text-apple-textLight dark:hover:text-white">
+                            <i class="fas fa-code text-apple-blue text-sm"></i>
+                            <span>الوظائف ومتطلباتها</span>
+                            <span id="tab-badge-psets" class="px-1.5 py-0.2 rounded-full text-[10px] bg-black/5 dark:bg-white/10 font-mono">0/1</span>
+                        </button>
+                        <button onclick="switchTab('notes')" id="tab-btn-notes"
+                                class="tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-apple-secondary hover:text-apple-textLight dark:hover:text-white">
+                            <i class="fas fa-note-sticky text-yellow-500 text-sm"></i>
+                            <span>ملاحظاتي وأكبر الأفكار</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: Lecture & Official Harvard Resources -->
+            <section id="tab-content-lecture" class="space-y-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <!-- Embedded YouTube Player Card (2 cols on XL) -->
+                    <div class="xl:col-span-2 bg-white dark:bg-apple-cardDark rounded-3xl p-5 apple-card flex flex-col gap-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-apple-red/10 text-apple-red flex items-center justify-center">
+                                    <i class="fab fa-youtube"></i>
+                                </span>
+                                <div>
+                                    <h3 class="text-sm font-extrabold" id="video-section-title">المحاضرة الرسمية (البث المباشر داخل المنصة)</h3>
+                                    <p class="text-[11px] text-apple-secondary">تقديم البروفيسور David J. Malan — جامعة هارفارد</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a id="youtube-external-btn" href="#" target="_blank" rel="noopener noreferrer"
+                                   class="px-3 py-1.5 rounded-xl bg-apple-red/10 text-apple-red hover:bg-apple-red hover:text-white text-xs font-bold transition flex items-center gap-1.5">
+                                    <i class="fab fa-youtube"></i> فتح في يوتيوب
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Responsive 16:9 Video Container -->
+                        <div class="relative w-full pt-[56.25%] rounded-2xl overflow-hidden bg-black shadow-inner border border-black/10 dark:border-white/10">
+                            <iframe id="lecture-youtube-iframe"
+                                    class="absolute inset-0 w-full h-full"
+                                    src=""
+                                    title="CS50 Lecture Video"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
+                        </div>
+
+                        <!-- Custom YouTube URL Override Bar (e.g., if user wants an Arabic dubbed/translated playlist or custom video) -->
+                        <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 text-xs">
+                            <span class="text-apple-secondary flex items-center gap-1.5">
+                                <i class="fas fa-link text-apple-blue"></i> هل تتابع ترجمة معينة أو فيديو آخر لهذا الأسبوع؟
+                            </span>
+                            <div class="flex items-center gap-2 flex-grow max-w-md">
+                                <input type="text" id="custom-youtube-input" placeholder="الصق رابط يوتيوب مخصص لهذا الأسبوع..."
+                                       class="w-full px-3 py-1.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-xs font-mono">
+                                <button onclick="saveCustomVideoUrl()" class="px-3 py-1.5 rounded-xl bg-apple-blue text-white font-bold hover:bg-blue-600 transition whitespace-nowrap">
+                                    تطبيق
+                                </button>
+                                <button onclick="resetCustomVideoUrl()" title="استعادة المحاضرة الرسمية" class="px-2.5 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-apple-secondary transition">
+                                    <i class="fas fa-rotate-left"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Official Week Resources & Quick Check Card (1 col on XL) -->
+                    <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-5 apple-card flex flex-col justify-between gap-5">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-apple-blue/10 text-apple-blue flex items-center justify-center">
+                                    <i class="fas fa-folder-open"></i>
+                                </span>
+                                <div>
+                                    <h3 class="text-sm font-extrabold">موارد الأسبوع من موقع هارفارد</h3>
+                                    <p class="text-[11px] text-apple-secondary">روابط مباشرة للملاحظات والأكواد والشرائح</p>
+                                </div>
+                            </div>
+
+                            <div id="official-resources-list" class="space-y-2.5">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Jump to Problem Sets -->
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-apple-blue/10 to-apple-purple/10 border border-apple-blue/20 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-apple-blue dark:text-apple-blueDark">الخطوة العملية التالية</span>
+                                <i class="fas fa-terminal text-apple-blue"></i>
+                            </div>
+                            <p class="text-xs text-apple-secondary leading-relaxed">
+                                بعد مشاهدة المحاضرة، انتقل إلى قسم <strong>الوظائف ومتطلباتها</strong> لاستعراض كل وظيفة مع قائمة شروطها وأوامر تسليمها.
+                            </p>
+                            <button onclick="switchTab('psets')" class="w-full py-2.5 rounded-xl bg-apple-blue hover:bg-blue-600 text-white text-xs font-bold transition shadow-sm">
+                                استعراض وظائف هذا المستوى ←
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Structured Weekly Checkpoints -->
+            <section id="tab-content-checkpoints" class="hidden space-y-5">
+                <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-6 apple-card">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-gray-100 dark:border-white/10">
+                        <div>
+                            <h3 class="text-lg font-extrabold flex items-center gap-2">
+                                <i class="fas fa-flag-checkered text-apple-orange"></i>
+                                نقاط التفتيش للمستوى (Level Checkpoints)
+                            </h3>
+                            <p class="text-xs text-apple-secondary mt-0.5">
+                                اتبع خطوات الدراسة المنهجية كما يوصي بها فريق CS50 في جامعة هارفارد قبل الانتقال للمستوى التالي.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="completeAllCheckpointsInCurrentLevel()" class="px-3.5 py-2 rounded-xl bg-apple-green/15 text-apple-green hover:bg-apple-green hover:text-white text-xs font-bold transition">
+                                <i class="fas fa-check-double ml-1"></i> تحديد الكل كمكتمل
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="checkpoints-list-container" class="mt-5 space-y-3">
+                        <!-- Checkpoints rendered dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Comprehensive Problem Sets & Imported Sub-Requirements -->
+            <section id="tab-content-psets" class="hidden space-y-6">
+                <!-- Psets Info Banner -->
+                <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-5 apple-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-r-4 border-r-apple-blue">
+                    <div class="space-y-1">
+                        <h3 class="text-base font-extrabold flex items-center gap-2">
+                            <i class="fas fa-code-branch text-apple-blue"></i>
+                            فصول الوظائف ومتطلباتها الرسمية (Problem Sets Specifications)
+                        </h3>
+                        <p class="text-xs text-apple-secondary leading-relaxed">
+                            كل وظيفة أدناه مقسمة إلى متطلباتها البرمجية الدقيقة المستوردة من موقع <code class="font-mono text-apple-blue">cs50.harvard.edu/x</code> مع أوامر الفحص <code class="font-mono">check50</code> والتسليم <code class="font-mono">submit50</code> الجاهزة للنسخ.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <a href="https://cs50.dev/" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-apple-purple/15 text-apple-purple hover:bg-apple-purple hover:text-white text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fas fa-terminal"></i> فتح VS Code (cs50.dev)
+                        </a>
+                        <a href="https://cs50.me/cs50x" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-apple-green/15 text-apple-green hover:bg-apple-green hover:text-white text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fas fa-check-circle"></i> التحقق من الدرجات (cs50.me)
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Problem Sets Cards Container -->
+                <div id="psets-cards-container" class="space-y-6">
+                    <!-- Detailed Problem Set chapters injected here -->
+                </div>
+            </section>
+
+            <!-- TAB 4: Apple Notes Inspired Personal Level Notebook -->
+            <section id="tab-content-notes" class="hidden">
+                <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-6 apple-card space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-gray-100 dark:border-white/10">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-xl bg-yellow-500/15 text-yellow-500 flex items-center justify-center">
+                                <i class="fas fa-pen-nib"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-base font-extrabold">دفتر ملاحظات المستوى</h3>
+                                <p class="text-xs text-apple-secondary">دوّن ملخصاتك، القوانين، الأكواد المهمة، أو الأفكار التي تعلمتها في هذا الأسبوع</p>
+                            </div>
+                        </div>
+                        <span id="notes-save-indicator" class="text-xs text-apple-secondary font-mono">يُحفظ تلقائياً أثناء الكتابة</span>
+                    </div>
+
+                    <textarea id="level-notes-textarea" rows="12"
+                              oninput="handleNotesInput(this.value)"
+                              placeholder="اكتب ملاحظاتك، ملخص المحاضرة، أو أكواد C / Python الخاصة بهذا الأسبوع هنا..."
+                              class="w-full p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-yellow-500 outline-none text-sm leading-relaxed resize-y"></textarea>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Accounts & Official CS50 Platforms Modal (Apple Sheet Style) -->
+    <div id="accounts-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div class="bg-white dark:bg-apple-cardDark w-full max-w-xl rounded-3xl p-6 lg:p-8 apple-card relative animate-fadeIn space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-apple-blue/15 text-apple-blue flex items-center justify-center text-lg">
+                        <i class="fas fa-id-badge"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-extrabold">حساباتي ومنصات CS50x</h3>
+                        <p class="text-xs text-apple-secondary">أدخل اسم حسابك في GitHub لربط ملفك ومنصات الدورة</p>
+                    </div>
+                </div>
+                <button onclick="closeAccountsModal()" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Form Inputs (Text Only - No OAuth Button) -->
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold mb-1.5">اسم المستخدم على GitHub (Username)</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3.5 text-apple-secondary font-mono text-xs">@</span>
+                            <input type="text" id="modal-github-input" dir="ltr" placeholder="username"
+                                   class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-sm font-mono text-left">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold mb-1.5">الاسم المعروض في المنصة (اختياري)</label>
+                        <input type="text" id="modal-displayname-input" placeholder="اسمك أو لقبك البرمجي"
+                               class="w-full px-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">رابط مستودع الحلول أو Codespace الخاص بك (اختياري)</label>
+                    <input type="url" id="modal-codespace-input" dir="ltr" placeholder="https://cs50.dev/"
+                           class="w-full px-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-sm font-mono text-left">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">الأسبوع (المستوى) الذي وصلت إليه حالياً</label>
+                    <select id="modal-current-week"
+                            class="w-full px-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-xs font-bold">
+                        <option value="0">المستوى 0 (Week 0) — Scratch</option>
+                        <option value="1">المستوى 1 (Week 1) — C</option>
+                        <option value="2">المستوى 2 (Week 2) — Arrays</option>
+                        <option value="3">المستوى 3 (Week 3) — Algorithms</option>
+                        <option value="4">المستوى 4 (Week 4) — Memory</option>
+                        <option value="5">المستوى 5 (Week 5) — Data Structures</option>
+                        <option value="6">المستوى 6 (Week 6) — Python</option>
+                        <option value="7">المستوى 7 (Week 7) — SQL</option>
+                        <option value="8">المستوى 8 (Week 8) — HTML, CSS, JavaScript</option>
+                        <option value="9">المستوى 9 (Week 9) — Flask</option>
+                        <option value="10">المستوى 10 (Week 10) — Final Project</option>
+                    </select>
+                    <p class="text-[11px] text-apple-secondary mt-1.5 flex items-center gap-1.5">
+                        <i class="fas fa-wand-magic-sparkles text-apple-blue"></i>
+                        <span>سيتم تلقائياً وضع علامة (✓) على المحاضرات والوظائف فقط لجميع الأسابيع السابقة.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Direct Official CS50 OpenCourseWare Links Grid -->
+            <div class="space-y-2.5">
+                <h4 class="text-xs font-bold text-apple-secondary uppercase">بوابات CS50x الأساسية (بدون الحاجة إلى edX)</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <a href="https://cs50.me/cs50x" target="_blank" rel="noopener noreferrer"
+                       class="p-3.5 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-green border border-transparent transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-award text-apple-green text-lg"></i>
+                            <div>
+                                <div class="text-xs font-bold">سجل الدرجات cs50.me</div>
+                                <div class="text-[11px] text-apple-secondary">تتبع قبول الوظائف والشهادة المجانية</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-left text-xs text-apple-secondary"></i>
+                    </a>
+
+                    <a href="https://cs50.dev/" target="_blank" rel="noopener noreferrer"
+                       class="p-3.5 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-purple border border-transparent transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-laptop-code text-apple-purple text-lg"></i>
+                            <div>
+                                <div class="text-xs font-bold">بيئة البرمجة cs50.dev</div>
+                                <div class="text-[11px] text-apple-secondary">VS Code السحابي الخاص بالدورة</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-left text-xs text-apple-secondary"></i>
+                    </a>
+
+                    <a href="https://submit.cs50.io/" target="_blank" rel="noopener noreferrer"
+                       class="p-3.5 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-orange border border-transparent transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-cloud-upload-alt text-apple-orange text-lg"></i>
+                            <div>
+                                <div class="text-xs font-bold">منصة التسليم submit.cs50.io</div>
+                                <div class="text-[11px] text-apple-secondary">سجل كافة عمليات submit50</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-left text-xs text-apple-secondary"></i>
+                    </a>
+
+                    <a href="https://cs50.harvard.edu/x/certificate/" target="_blank" rel="noopener noreferrer"
+                       class="p-3.5 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-blue border border-transparent transition flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-certificate text-apple-blue text-lg"></i>
+                            <div>
+                                <div class="text-xs font-bold">شهادة هارفارد المجانية</div>
+                                <div class="text-[11px] text-apple-secondary">رابط إصدار الشهادة عند إتمام 70%+</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-left text-xs text-apple-secondary"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-white/10">
+                <button onclick="closeAccountsModal()" class="px-4 py-2.5 rounded-xl bg-black/5 dark:bg-white/10 text-xs font-bold">
+                    إغلاق
+                </button>
+                <button onclick="saveAccountsProfile()" class="px-6 py-2.5 rounded-xl bg-apple-blue hover:bg-blue-600 text-white text-xs font-bold shadow-md shadow-apple-blue/20">
+                    حفظ الإعدادات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- First-Time Onboarding & Harvard Direct Registration Wizard Modal -->
+    <div id="onboarding-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-md">
+        <div class="bg-white dark:bg-apple-cardDark w-full max-w-3xl rounded-3xl p-6 lg:p-8 apple-card relative max-h-[92vh] overflow-y-auto space-y-6">
+            
+            <!-- Top Modal Header -->
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-white/10 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-apple-blue to-apple-purple text-white flex items-center justify-center text-lg shadow-md shadow-apple-blue/20">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-lg font-black">مرحباً بك في CS50x Studio</h3>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-apple-green/15 text-apple-green">مباشر عبر هارفارد • بدون edX</span>
+                        </div>
+                        <p class="text-xs text-apple-secondary">معالج الإعداد الذكي لتخصيص مسارك التعليمي</p>
+                    </div>
+                </div>
+                <button onclick="closeOnboardingModal()" title="تخطي وإغلاق" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center hover:bg-black/10 transition">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
+
+            <!-- VIEW 1: INITIAL CHOICE (EXISTING VS NEW STUDENT) -->
+            <div id="onboarding-view-choice" class="space-y-6">
+                <div class="text-center space-y-2 max-w-xl mx-auto py-2">
+                    <h4 class="text-xl lg:text-2xl font-black tracking-tight">أهلاً بك في رحلة CS50x! 👋</h4>
+                    <p class="text-sm text-apple-secondary leading-relaxed">
+                        هل أنت مسجل حالياً في الدورة وبدأت الدراسة، أم أنك طالب جديد وتريد معرفة كيفية التسجيل الرسمي المجاني والبدء من الصفر؟
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Choice Card A: Already Enrolled -->
+                    <button type="button" onclick="switchOnboardingView('existing')"
+                            class="text-right p-6 rounded-3xl bg-apple-bgLight dark:bg-apple-elevatedDark border-2 border-transparent hover:border-apple-blue transition-all group flex flex-col justify-between gap-5 apple-card-hover">
+                        <div class="space-y-3">
+                            <div class="w-12 h-12 rounded-2xl bg-apple-blue/15 text-apple-blue flex items-center justify-center text-xl group-hover:scale-105 transition">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue">اختصار الطريق</span>
+                                <h5 class="text-lg font-black pt-1">أنا مسجل حالياً وماشي بالدورة</h5>
+                                <p class="text-xs text-apple-secondary leading-relaxed">
+                                    لدي حساب GitHub مفعّل في CS50، وأريد فقط ربط حسابي وتحديد الأسبوع الذي وصلت إليه للانطلاق فوراً.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-bold text-apple-blue pt-2 border-t border-black/5 dark:border-white/5">
+                            <span>إدخال حساب GitHub والانطلاق</span>
+                            <i class="fas fa-arrow-left group-hover:-translate-x-1 transition"></i>
+                        </div>
+                    </button>
+
+                    <!-- Choice Card B: Brand New Student -->
+                    <button type="button" onclick="switchOnboardingView('new')"
+                            class="text-right p-6 rounded-3xl bg-apple-bgLight dark:bg-apple-elevatedDark border-2 border-transparent hover:border-apple-green transition-all group flex flex-col justify-between gap-5 apple-card-hover">
+                        <div class="space-y-3">
+                            <div class="w-12 h-12 rounded-2xl bg-apple-green/15 text-apple-green flex items-center justify-center text-xl group-hover:scale-105 transition">
+                                <i class="fas fa-seedling"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-apple-green/15 text-apple-green">دليل خطوة بخطوة</span>
+                                <h5 class="text-lg font-black pt-1">أنا طالب جديد (لم أسجل بعد)</h5>
+                                <p class="text-xs text-apple-secondary leading-relaxed">
+                                    أريد معرفة كيفية التسجيل المجاني المباشر عن طريق جامعة هارفارد (بدون edX) وتجهيز حساباتي خطوة بخطوة.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-bold text-apple-green pt-2 border-t border-black/5 dark:border-white/5">
+                            <span>عرض خطوات التسجيل من الصفر</span>
+                            <i class="fas fa-arrow-left group-hover:-translate-x-1 transition"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 2: EXISTING STUDENT FAST SETUP -->
+            <div id="onboarding-view-existing" class="hidden space-y-5">
+                <div class="flex items-center justify-between">
+                    <button type="button" onclick="switchOnboardingView('choice')" class="text-xs font-bold text-apple-blue flex items-center gap-1.5 hover:underline">
+                        <i class="fas fa-arrow-right"></i> العودة للاختيار
+                    </button>
+                    <span class="text-xs font-bold text-apple-secondary">إعداد سريع للطلاب المسجلين</span>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-apple-blue/10 border border-apple-blue/20 space-y-1">
+                    <h4 class="text-sm font-extrabold text-apple-blue dark:text-apple-blueDark">أهلاً بعودتك يا بطل! 🚀</h4>
+                    <p class="text-xs text-apple-secondary leading-relaxed">
+                        أدخل اسم حسابك على GitHub (Username) وحدد الأسبوع الذي وصلت إليه لتنطلق فوراً.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold mb-1.5">اسم حسابك على GitHub (Username)</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3.5 text-apple-secondary font-mono text-xs">@</span>
+                            <input type="text" id="onb-existing-github" dir="ltr" placeholder="username"
+                                   class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-sm font-mono text-left">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1.5">الاسم الشخصي (اختياري)</label>
+                        <input type="text" id="onb-existing-name" placeholder="مثال: أحمد"
+                               class="w-full px-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5">الأسبوع (المستوى) الذي تدرسه حالياً — سننقلك إليه مباشرة</label>
+                    <select id="onb-existing-week"
+                            class="w-full px-4 py-2.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-transparent focus:border-apple-blue outline-none text-xs font-bold">
+                        <option value="0">المستوى 0 (Week 0) — Scratch</option>
+                        <option value="1">المستوى 1 (Week 1) — C</option>
+                        <option value="2">المستوى 2 (Week 2) — Arrays</option>
+                        <option value="3">المستوى 3 (Week 3) — Algorithms</option>
+                        <option value="4">المستوى 4 (Week 4) — Memory</option>
+                        <option value="5">المستوى 5 (Week 5) — Data Structures</option>
+                        <option value="6">المستوى 6 (Week 6) — Python</option>
+                        <option value="7">المستوى 7 (Week 7) — SQL</option>
+                        <option value="8">المستوى 8 (Week 8) — HTML, CSS, JavaScript</option>
+                        <option value="9">المستوى 9 (Week 9) — Flask</option>
+                        <option value="10">المستوى 10 (Week 10) — Final Project</option>
+                    </select>
+                    <p class="text-[11px] text-apple-secondary mt-1.5 flex items-center gap-1.5">
+                        <i class="fas fa-wand-magic-sparkles text-apple-blue"></i>
+                        <span>سيتم تلقائياً وضع علامة (✓) على المحاضرات والوظائف فقط لجميع الأسابيع السابقة.</span>
+                    </p>
+                </div>
+
+                <!-- Quick Check of Registration Requirements -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold">تأكيد سريع لمتطلبات التسجيل في هارفارد (تأكد أنك فعلتها بحساب GitHub):</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <a href="https://submit.cs50.io/" target="_blank" rel="noopener noreferrer"
+                           class="p-3 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-orange border border-transparent transition flex items-center justify-between text-xs">
+                            <span class="font-bold flex items-center gap-2"><i class="fas fa-cloud-arrow-up text-apple-orange"></i> تفعيل submit.cs50.io</span>
+                            <i class="fas fa-arrow-up-left-from-square text-[10px] text-apple-secondary"></i>
+                        </a>
+                        <a href="https://cs50.me/cs50x" target="_blank" rel="noopener noreferrer"
+                           class="p-3 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-green border border-transparent transition flex items-center justify-between text-xs">
+                            <span class="font-bold flex items-center gap-2"><i class="fas fa-chart-pie text-apple-green"></i> تفعيل cs50.me/cs50x</span>
+                            <i class="fas fa-arrow-up-left-from-square text-[10px] text-apple-secondary"></i>
+                        </a>
+                        <a href="https://cs50.dev/" target="_blank" rel="noopener noreferrer"
+                           class="p-3 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-purple border border-transparent transition flex items-center justify-between text-xs">
+                            <span class="font-bold flex items-center gap-2"><i class="fas fa-laptop-code text-apple-purple"></i> بيئة الكود cs50.dev</span>
+                            <i class="fas fa-arrow-up-left-from-square text-[10px] text-apple-secondary"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-end gap-3">
+                    <button type="button" onclick="completeExistingStudentOnboarding()"
+                            class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-apple-blue hover:bg-blue-600 text-white text-xs font-extrabold shadow-lg shadow-apple-blue/25 transition flex items-center justify-center gap-2">
+                        <span>حفظ الحساب والانتقال لمستواي الحالي</span>
+                        <i class="fas fa-rocket"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 3: NEW STUDENT STEP-BY-STEP HARVARD REGISTRATION GUIDE (NO EDX) -->
+            <div id="onboarding-view-new" class="hidden space-y-5">
+                <div class="flex items-center justify-between">
+                    <button type="button" onclick="switchOnboardingView('choice')" class="text-xs font-bold text-apple-blue flex items-center gap-1.5 hover:underline">
+                        <i class="fas fa-arrow-right"></i> العودة للاختيار
+                    </button>
+                    <span id="onb-new-progress-badge" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-apple-green/15 text-apple-green">
+                        0/4 خطوات مكتملة
+                    </span>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-apple-green/10 border border-apple-green/20 space-y-1">
+                    <h4 class="text-sm font-extrabold text-apple-green">كيف تسجل في CS50x مجاناً عبر هارفارد مباشرة (بدون edX)؟ 🎓</h4>
+                    <p class="text-xs text-apple-secondary leading-relaxed">
+                        جامعة هارفارد تتيح الدورة بالكامل مجاناً مع شهادة إتمام مجانية عبر منصتها المفتوحة (OpenCourseWare). كل ما تحتاجه هو <strong>حساب GitHub واحد</strong> وتفعيله في 3 روابط رسمية فقط! اتبع الخطوات الأربع التالية بالترتيب:
+                    </p>
+                </div>
+
+                <!-- 4 Interactive Registration Steps -->
+                <div class="space-y-3">
+                    <!-- Step 1: GitHub Account -->
+                    <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-black/5 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <label class="flex items-start gap-3 cursor-pointer flex-grow select-none">
+                            <input type="checkbox" id="onb-step-1" onchange="toggleNewStudentStep('step1')" class="apple-checkbox mt-0.5">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-apple-blue/15 text-apple-blue">الخطوة 1</span>
+                                    <span class="text-xs font-extrabold">إنشاء حساب مجاني على موقع GitHub</span>
+                                </div>
+                                <p class="text-[11px] text-apple-secondary mt-1 leading-relaxed">
+                                    تعتمد هارفارد على حساب GitHub كهويتك الرسمية لحفظ أكوادك، تسليم الوظائف، وإصدار الشهادة. أنشئ حساباً أو سجل دخولك إذا كان لديك حساب مسبقاً.
+                                </p>
+                            </div>
+                        </label>
+                        <a href="https://github.com/signup" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-blue hover:text-white text-xs font-bold transition apple-card flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
+                            <i class="fab fa-github"></i> فتح GitHub ↗
+                        </a>
+                    </div>
+
+                    <!-- Step 2: Authorize submit.cs50.io -->
+                    <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-black/5 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <label class="flex items-start gap-3 cursor-pointer flex-grow select-none">
+                            <input type="checkbox" id="onb-step-2" onchange="toggleNewStudentStep('step2')" class="apple-checkbox mt-0.5">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-apple-orange/15 text-apple-orange">الخطوة 2</span>
+                                    <span class="text-xs font-extrabold">تفعيل منصة التسليم والتصحيح (submit.cs50.io)</span>
+                                </div>
+                                <p class="text-[11px] text-apple-secondary mt-1 leading-relaxed">
+                                    افتح الرابط وسجل الدخول بحساب GitHub ثم اضغط الزر الأخضر <strong>Authorize CS50</strong> لتفعيل أوامر الفحص <code class="font-mono">check50</code> والتسليم <code class="font-mono">submit50</code>.
+                                </p>
+                            </div>
+                        </label>
+                        <a href="https://submit.cs50.io/" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-orange hover:text-white text-xs font-bold transition apple-card flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
+                            <i class="fas fa-cloud-arrow-up"></i> تفعيل Submit ↗
+                        </a>
+                    </div>
+
+                    <!-- Step 3: Activate Gradebook cs50.me/cs50x -->
+                    <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-black/5 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <label class="flex items-start gap-3 cursor-pointer flex-grow select-none">
+                            <input type="checkbox" id="onb-step-3" onchange="toggleNewStudentStep('step3')" class="apple-checkbox mt-0.5">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-apple-green/15 text-apple-green">الخطوة 3</span>
+                                    <span class="text-xs font-extrabold">تفعيل سجل الدرجات والشهادة المجانية (cs50.me/cs50x)</span>
+                                </div>
+                                <p class="text-[11px] text-apple-secondary mt-1 leading-relaxed">
+                                    ادخل بحساب GitHub ووافق على الانضمام لسجل درجات CS50x. هنا ستظهر علاماتك تلقائياً بعد كل وظيفة، ومنه تستلم شهادة هارفارد المجانية عند إنهاء الدورة!
+                                </p>
+                            </div>
+                        </label>
+                        <a href="https://cs50.me/cs50x" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-green hover:text-white text-xs font-bold transition apple-card flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
+                            <i class="fas fa-award"></i> تفعيل cs50.me ↗
+                        </a>
+                    </div>
+
+                    <!-- Step 4: Cloud VS Code cs50.dev -->
+                    <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-black/5 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <label class="flex items-start gap-3 cursor-pointer flex-grow select-none">
+                            <input type="checkbox" id="onb-step-4" onchange="toggleNewStudentStep('step4')" class="apple-checkbox mt-0.5">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-apple-purple/15 text-apple-purple">الخطوة 4</span>
+                                    <span class="text-xs font-extrabold">تجهيز بيئة البرمجة السحابية (cs50.dev)</span>
+                                </div>
+                                <p class="text-[11px] text-apple-secondary mt-1 leading-relaxed">
+                                    لا تحتاج لتثبيت أي برنامج على حاسوبك! افتح <code class="font-mono">cs50.dev</code> وسجل الدخول بـ GitHub ليتم إنشاء مساحة VS Code السحابية الجاهزة بكل أدوات الدورة.
+                                </p>
+                            </div>
+                        </label>
+                        <a href="https://cs50.dev/" target="_blank" rel="noopener noreferrer"
+                           class="px-3.5 py-2 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-purple hover:text-white text-xs font-bold transition apple-card flex items-center gap-1.5 self-end sm:self-center flex-shrink-0">
+                            <i class="fas fa-laptop-code"></i> فتح cs50.dev ↗
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Step 5: Save GitHub Username & Start Week 0 -->
+                <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border border-apple-blue/25 space-y-3">
+                    <div class="text-xs font-extrabold flex items-center gap-2">
+                        <i class="fab fa-github text-apple-blue text-sm"></i>
+                        <span>الخطوة الأخيرة: أدخل اسم حسابك على GitHub (Username) الذي أنشأته</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="relative flex items-center">
+                            <span class="absolute left-3.5 text-apple-secondary font-mono text-xs">@</span>
+                            <input type="text" id="onb-new-github" dir="ltr" placeholder="github_username"
+                                   class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white dark:bg-apple-cardDark border border-black/5 dark:border-white/10 focus:border-apple-blue outline-none text-xs font-mono text-left">
+                        </div>
+                        <input type="text" id="onb-new-name" placeholder="اسمك الشخصي (اختياري)"
+                               class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-apple-cardDark border border-black/5 dark:border-white/10 focus:border-apple-blue outline-none text-xs">
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-gray-100 dark:border-white/10 flex items-center justify-end">
+                    <button type="button" onclick="completeNewStudentOnboarding()"
+                            class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-apple-green hover:bg-green-600 text-white text-xs font-extrabold shadow-lg shadow-apple-green/25 transition flex items-center justify-center gap-2">
+                        <span>أتممت خطوات التسجيل — ابدأ رحلتي من المستوى 0!</span>
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Apple Style Floating Toast Notification -->
+    <div id="apple-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-3 transition-all duration-300">
+        <div class="apple-glass px-5 py-3 rounded-full shadow-xl border flex items-center gap-2.5 text-xs font-bold">
+            <i id="apple-toast-icon" class="fas fa-check-circle text-apple-green text-sm"></i>
+            <span id="apple-toast-text">تم الحفظ بنجاح</span>
+        </div>
+    </div>
+
+    <!-- Application Logic & Complete CS50x OpenCourseWare Data -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // 1. COMPLETE CS50x OPENCOURSEWARE CURRICULUM
+        // ==========================================
+        const CS50X_DATA = [
+            {
+                week: 0,
+                title: "Scratch — التفكير الحاسوبي",
+                subtitle: "مقدمة علوم الحاسوب، النظام الثنائي، الخوارزميات، والبرمجة المرئية",
+                icon: "fa-puzzle-piece",
+                color: "orange",
+                youtubeId: "3LPJfIKxwWc",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/0/",
+                topics: ["Binary", "ASCII & Unicode", "Algorithms", "Pseudocode", "Scratch Blocks", "Loops & Events"],
+                description: "المدخل الأساسي لعالم علوم الحاسوب: كيف تمثل الحواسيب الأرقام والنصوص والصور والأصوات بالنظام الثنائي (0 و 1)، وكيف نصمم خوارزميات فعالة ونبني مشروعاً تفاعلياً باستخدام بيئة Scratch من MIT.",
+                checkpoints: [
+                    { id: "w0_cp_lec", title: "مشاهدة محاضرة الأسبوع 0 (Scratch)", desc: "فهم تمثيل البيانات، الخوارزميات، ومبادئ البرمجة", xp: 30, url: "https://cs50.harvard.edu/x/weeks/0/" },
+                    { id: "w0_cp_notes", title: "مراجعة ملخص المحاضرة (Lecture Notes) والشرائح", desc: "قراءة الملاحظات الرسمية واستعراض أمثلة Scratch", xp: 15, url: "https://cs50.harvard.edu/x/notes/0/" },
+                    { id: "w0_cp_pset", title: "تصميم وتسليم مشروع Scratch (Problem Set 0)", desc: "بناء لعبة أو قصة تفاعلية تحقق كافة الشروط الرسمية", xp: 100, url: "https://cs50.harvard.edu/x/psets/0/scratch/" }
+                ],
+                psets: [
+                    {
+                        id: "pset0_scratch",
+                        name: "Scratch — مشروع سكراتش الإبداعي",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 100,
+                        specUrl: "https://cs50.harvard.edu/x/psets/0/scratch/",
+                        summary: "تصميم مشروع تفاعلي من اختيارك (لعبة، فن تفاعلي، أو قصة متحركة) على موقع scratch.mit.edu وتصدير ملف المشروع (.sb3) لتسليمه.",
+                        requirements: [
+                            { id: "r_s0_1", text: "استخدام كائنين على الأقل (At least two sprites)، على ألا يكون كلاهما القطة الافتراضية." },
+                            { id: "r_s0_2", text: "احتواء المشروع على 3 مقاطع برمجية (Scripts) على الأقل في المجموع." },
+                            { id: "r_s0_3", text: "استخدام شرط واحد على الأقل (Conditional: if / if-else)." },
+                            { id: "r_s0_4", text: "استخدام حلقة تكرارية واحدة على الأقل (Loop: repeat / forever)." },
+                            { id: "r_s0_5", text: "استخدام متغير واحد على الأقل (Variable) لتخزين قيمة متغيرة كالنقاط أو الوقت." },
+                            { id: "r_s0_6", text: "إنشاء واستخدام لبنة مخصصة واحدة على الأقل (Custom Block - My Blocks) تأخذ مدخلاً واحداً على الأقل." },
+                            { id: "r_s0_7", text: "تحميل ملف المشروع (.sb3) ورفعه عبر صفحة submit.cs50.io والتحقق من اجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/scratch",
+                        submitCmd: "يرفع ملف .sb3 مباشرة عبر: https://submit.cs50.io/upload/cs50/problems/2024/x/scratch"
+                    }
+                ]
+            },
+            {
+                week: 1,
+                title: "C — لغة البرمجة سي",
+                subtitle: "الانتقال من اللبنات المرئية إلى كتابة الكود النصي، المتغيرات، الشروط، والحلقات",
+                icon: "fa-terminal",
+                color: "blue",
+                youtubeId: "cwtpLIWylAw",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/1/",
+                topics: ["Source Code", "Compiler (clang/make)", "Header Files", "Data Types", "Conditionals", "Loops", "Linux CLI"],
+                description: "التعرف على لغة C العريقة وبيئة سطر الأوامر (Linux Terminal) داخل VS Code (cs50.dev)، وكيف يتحول الكود المصدري إلى كود آلة عبر المترجم (Compiler)، والتعامل مع القيود الرياضية مثل Integer Overflow.",
+                checkpoints: [
+                    { id: "w1_cp_lec", title: "مشاهدة محاضرة الأسبوع 1 (C)", desc: "أساسيات لغة C، الدوال، الشروط، والحلقات التكرارية", xp: 30, url: "https://cs50.harvard.edu/x/weeks/1/" },
+                    { id: "w1_cp_notes", title: "تصفح الملاحظات والأكواد المصدرية (Notes & Source Code)", desc: "تجربة ملفات المحاضرة داخل cs50.dev", xp: 15, url: "https://cs50.harvard.edu/x/notes/1/" },
+                    { id: "w1_cp_shorts", title: "مشاهدة المقاطع القصيرة (Shorts — Week 1)", desc: "Data Types, Operators, Conditional Statements, Loops, Command Line", xp: 25, url: "https://cs50.harvard.edu/x/weeks/1/" },
+                    { id: "w1_cp_sec", title: "متابعة التطبيق العملي (Section 1)", desc: "تمارين إضافية على المتغيرات والحلقات في C", xp: 20, url: "https://cs50.harvard.edu/x/weeks/1/" },
+                    { id: "w1_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 1 (Problem Set 1)", desc: "إتمام Hello و Mario و Cash/Credit", xp: 120, url: "https://cs50.harvard.edu/x/psets/1/" }
+                ],
+                psets: [
+                    {
+                        id: "pset1_me",
+                        name: "Hello, It's Me — الترحيب بالمستخدم",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 25,
+                        specUrl: "https://cs50.harvard.edu/x/psets/1/me/",
+                        summary: "كتابة أول برنامج بلغة C يطلب اسم المستخدم ثم يطبع رسالة ترحيبية بصيغة hello, [name].",
+                        requirements: [
+                            { id: "r_w1_me1", text: "إنشاء المجلد me وملف hello.c وتضمين مكتبتي <stdio.h> و <cs50.h>." },
+                            { id: "r_w1_me2", text: "سؤال المستخدم عن اسمه باستخدام get_string(\"What's your name? \")." },
+                            { id: "r_w1_me3", text: "طباعة hello, متبوعة بالاسم وسطر جديد \\n بدقة." },
+                            { id: "r_w1_me4", text: "اجتياز فحص check50 وأناقة الكود style50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/me",
+                        submitCmd: "submit50 cs50/problems/2024/x/me"
+                    },
+                    {
+                        id: "pset1_mario",
+                        name: "Mario (Less أو More) — أهرامات سوبر ماريو",
+                        type: "اختر نسخة واحدة (عادية أو متقدمة)",
+                        typeBadgeColor: "purple",
+                        xp: 50,
+                        specUrl: "https://cs50.harvard.edu/x/psets/1/mario/less/",
+                        summary: "طباعة أهرامات ماريو الشهيرة باستخدام محارف # والمسافات في التيرمينال بناءً على الارتفاع الذي يدخله المستخدم (بين 1 و 8). يمكنك اختيار النسخة العادية (هرم واحد محاذٍ لليمين) أو المتقدمة (هرمين متقابلين بينهما مسافتين).",
+                        requirements: [
+                            { id: "r_w1_ma1", text: "طلب الارتفاع Height من المستخدم باستخدام حلقة do-while مع get_int." },
+                            { id: "r_w1_ma2", text: "رفض أي رقم أقل من 1 أو أكبر من 8 وإعادة مطالبة المستخدم فوراً." },
+                            { id: "r_w1_ma3", text: "رسم المسافات البادئة (Spaces) ومربعات الهرم (#) بدقة لكل صف باستخدام حلقات متداخلة." },
+                            { id: "r_w1_ma4", text: "(في حال اختيار النسخة المتقدمة More): إضافة فجوة بمقدار مسافتين ثم طباعة الهرم الأيمن المقابل دون مسافات زائدة بعده." },
+                            { id: "r_w1_ma5", text: "اجتياز كافة اختبارات check50 وتسليم الوظيفة." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/mario/less",
+                        submitCmd: "submit50 cs50/problems/2024/x/mario/less"
+                    },
+                    {
+                        id: "pset1_cash_credit",
+                        name: "Cash (العادية) أو Credit (المتقدمة)",
+                        type: "اختر نسخة واحدة (عادية أو متقدمة)",
+                        typeBadgeColor: "purple",
+                        xp: 60,
+                        specUrl: "https://cs50.harvard.edu/x/psets/1/cash/",
+                        summary: "في Cash: حساب أقل عدد ممكن من العملات المعدنية (25¢, 10¢, 5¢, 1¢) لإرجاع الباقي باستخدام الخوارزمية الجشعة (Greedy Algorithm). وفي Credit: التحقق من صحة أرقام البطاقات الائتمانية (AMEX, MASTERCARD, VISA) باستخدام خوارزمية Luhn.",
+                        requirements: [
+                            { id: "r_w1_cc1", text: "قراءة المدخلات من المستخدم والتحقق من صحتها (عدم قبول أرقام سالبة في Cash)." },
+                            { id: "r_w1_cc2", text: "تنفيذ العمليات الحسابية (قسمة وباقي قسمة % أو خوارزمية Luhn في Credit)." },
+                            { id: "r_w1_cc3", text: "طباعة النتيجة النهائية متبوعة بسطر جديد \\n وفق المواصفات الرسمية." },
+                            { id: "r_w1_cc4", text: "اجتياز فحص check50 و style50 وتسليم الوظيفة." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/cash",
+                        submitCmd: "submit50 cs50/problems/2024/x/cash"
+                    }
+                ]
+            },
+            {
+                week: 2,
+                title: "Arrays — المصفوفات والتشفير",
+                subtitle: "تخزين البيانات في الذاكرة، السلاسل النصية، سطر الأوامر، وعلم التشفير",
+                icon: "fa-layer-group",
+                color: "purple",
+                youtubeId: "4vU4aEFmTSo",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/2/",
+                topics: ["Preprocessing & Compiling", "Debugging (debug50)", "Arrays", "Strings & NUL (\\0)", "Command-Line Arguments (argc, argv)", "Cryptography"],
+                description: "فهم المراحل الأربع لعملية الترجمة (Preprocessing, Compiling, Assembling, Linking)، وكيف تُخزن المصفوفات والنصوص في الذاكرة العشوائية RAM، وكيفية تمرير المعاملات للبرنامج عبر سطر الأوامر، مع تطبيقات عملية في التشفير.",
+                checkpoints: [
+                    { id: "w2_cp_lec", title: "مشاهدة محاضرة الأسبوع 2 (Arrays)", desc: "المصفوفات، النصوص، التصحيح debug50، والتشفير", xp: 30, url: "https://cs50.harvard.edu/x/weeks/2/" },
+                    { id: "w2_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 2", desc: "فهم كيفية التعامل مع مصفوفات الحروف و argv", xp: 15, url: "https://cs50.harvard.edu/x/notes/2/" },
+                    { id: "w2_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 2)", desc: "Functions, Variables & Scope, Arrays, Command-Line Arguments", xp: 25, url: "https://cs50.harvard.edu/x/weeks/2/" },
+                    { id: "w2_cp_sec", title: "متابعة التطبيق العملي (Section 2)", desc: "تمارين على المصفوفات والسلاسل النصية", xp: 20, url: "https://cs50.harvard.edu/x/weeks/2/" },
+                    { id: "w2_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 2 (Problem Set 2)", desc: "Scrabble, Readability, Caesar/Substitution", xp: 130, url: "https://cs50.harvard.edu/x/psets/2/" }
+                ],
+                psets: [
+                    {
+                        id: "pset2_scrabble",
+                        name: "Scrabble — لعبة سكرابل للكلمات",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 40,
+                        specUrl: "https://cs50.harvard.edu/x/psets/2/scrabble/",
+                        summary: "كتابة برنامج يحسب نقاط كلمتين يدخلهما لاعبان وفق جدول نقاط حروف لعبة Scrabble ويعلن الفائز (Player 1 wins! أو Player 2 wins! أو Tie!).",
+                        requirements: [
+                            { id: "r_w2_sc1", text: "استقبال كلمتي اللاعب الأول والثاني باستخدام get_string." },
+                            { id: "r_w2_sc2", text: "إنشاء دالة لحساب مجموع نقاط الحروف بغض النظر عن حالة الأحرف (كبيرة أم صغيرة باستخدام toupper/tolower من ctype.h)." },
+                            { id: "r_w2_sc3", text: "تجاهل علامات الترقيم والرموز غير الأبجدية (إعطاؤها 0 نقطة)." },
+                            { id: "r_w2_sc4", text: "مقارنة النتيجتين وطباعة الفائز أو التعادل واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/scrabble",
+                        submitCmd: "submit50 cs50/problems/2024/x/scrabble"
+                    },
+                    {
+                        id: "pset2_readability",
+                        name: "Readability — قياس مستوى القراءة (Coleman-Liau)",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 45,
+                        specUrl: "https://cs50.harvard.edu/x/psets/2/readability/",
+                        summary: "تحليل نص يدخله المستخدم لحساب عدد الحروف والكلمات والجمل، ثم تطبيق معادلة Coleman-Liau لتحديد المرحلة الدراسية المناسبة لقراءة النص.",
+                        requirements: [
+                            { id: "r_w2_rd1", text: "حساب عدد الأحرف الأبجدية فقط باستخدام isalpha." },
+                            { id: "r_w2_rd2", text: "حساب عدد الكلمات بناءً على المسافات الفاصلة." },
+                            { id: "r_w2_rd3", text: "حساب عدد الجمل بناءً على علامات الانتهاء (. أو ! أو ?)." },
+                            { id: "r_w2_rd4", text: "تطبيق معادلة index = 0.0588 * L - 0.296 * S - 15.8 وتقريب النتيجة بأقرب عدد صحيح عبر round()." },
+                            { id: "r_w2_rd5", text: "طباعة Before Grade 1 أو Grade X أو Grade 16+ حسب النتيجة واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/readability",
+                        submitCmd: "submit50 cs50/problems/2024/x/readability"
+                    },
+                    {
+                        id: "pset2_crypto",
+                        name: "Caesar (العادية) أو Substitution (المتقدمة)",
+                        type: "اختر نسخة واحدة (عادية أو متقدمة)",
+                        typeBadgeColor: "purple",
+                        xp: 60,
+                        specUrl: "https://cs50.harvard.edu/x/psets/2/caesar/",
+                        summary: "بناء أداة تشفير حقيقية تستقبل مفتاح التشفير عبر سطر الأوامر (argv[1]). في Caesar يتم إزاحة الحروف بعدد ثابت k، وفي Substitution يتم استبدال كل حرف بمقابله في أبجدية مشفرة مكونة من 26 حرفاً.",
+                        requirements: [
+                            { id: "r_w2_cr1", text: "التحقق من أن argc يساوي 2 تماماً، وإلا طباعة رسالة الاستخدام وإرجاع 1." },
+                            { id: "r_w2_cr2", text: "التحقق من صحة المفتاح في argv[1] (أرقام فقط في Caesar، أو 26 حرفاً أبجدياً غير مكرر في Substitution)." },
+                            { id: "r_w2_cr3", text: "الحفاظ على حالة الأحرف (الكبير يبقى كبيراً والصغير يبقى صغيراً) وعدم تغيير الأرقام والمسافات والرموز." },
+                            { id: "r_w2_cr4", text: "طباعة ciphertext: متبوعاً بالنص المشفر واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/caesar",
+                        submitCmd: "submit50 cs50/problems/2024/x/caesar"
+                    }
+                ]
+            },
+            {
+                week: 3,
+                title: "Algorithms — الخوارزميات والبحث والترتيب",
+                subtitle: "البحث الخطي والثنائي، خوارزميات الترتيب، التعقيد الزمني Big O، والاستدعاء الذاتي Recursion",
+                icon: "fa-diagram-project",
+                color: "green",
+                youtubeId: "jZzyERW7h1A",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/3/",
+                topics: ["Linear & Binary Search", "Big O / Omega / Theta", "Structs", "Selection & Bubble Sort", "Recursion", "Merge Sort"],
+                description: "قياس كفاءة الخوارزميات رياضياً باستخدام Big O Notation، وبناء هياكل بيانات مخصصة عبر struct، ومقارنة خوارزميات الترتيب، وتوظيف الاستدعاء الذاتي (Recursion) لحل المشكلات المعقدة.",
+                checkpoints: [
+                    { id: "w3_cp_lec", title: "مشاهدة محاضرة الأسبوع 3 (Algorithms)", desc: "البحث، الترتيب، Big O، والـ Recursion", xp: 30, url: "https://cs50.harvard.edu/x/weeks/3/" },
+                    { id: "w3_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 3", desc: "دراسة أمثلة البحث الثنائي و Merge Sort", xp: 15, url: "https://cs50.harvard.edu/x/notes/3/" },
+                    { id: "w3_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 3)", desc: "Search Algorithms, Bubble/Selection/Merge Sort, Recursion", xp: 25, url: "https://cs50.harvard.edu/x/weeks/3/" },
+                    { id: "w3_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 3 (Problem Set 3)", desc: "Sort, Plurality, Runoff / Tideman", xp: 140, url: "https://cs50.harvard.edu/x/psets/3/" }
+                ],
+                psets: [
+                    {
+                        id: "pset3_sort",
+                        name: "Sort — تحليل خوارزميات الترتيب",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 35,
+                        specUrl: "https://cs50.harvard.edu/x/psets/3/sort/",
+                        summary: "اختبار ثلاثة برامج مترجمة مسبقاً (sort1, sort2, sort3) على ملفات أرقام مرتبة، عشوائية، ومعكوسة باستخدام أمر time لاكتشاف أي منها يستخدم Bubble Sort وأيها Selection Sort وأيها Merge Sort.",
+                        requirements: [
+                            { id: "r_w3_so1", text: "قياس زمن تنفيذ sort1 و sort2 و sort3 على الملفات الكبيرة مثل random50000.txt و sorted50000.txt." },
+                            { id: "r_w3_so2", text: "تحديد الخوارزمية الأسرع في جميع الحالات O(n log n) وهي Merge Sort." },
+                            { id: "r_w3_so3", text: "التمييز بين Bubble Sort الذي يتحسن على البيانات المرتبة Ω(n) و Selection Sort الثابت Θ(n²)." },
+                            { id: "r_w3_so4", text: "تعبئة التفسير العلمي في ملف answers.txt واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/sort",
+                        submitCmd: "submit50 cs50/problems/2024/x/sort"
+                    },
+                    {
+                        id: "pset3_plurality",
+                        name: "Plurality — نظام الانتخابات بالأغلبية البسيطة",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 45,
+                        specUrl: "https://cs50.harvard.edu/x/psets/3/plurality/",
+                        summary: "إكمال برنامج يحاكي انتخابات بالأغلبية البسيطة باستخدام مصفوفة من الهياكل (struct candidate) لتسجيل الأصوات وطباعة الفائز أو الفائزين بالتعادل.",
+                        requirements: [
+                            { id: "r_w3_pl1", text: "إكمال دالة vote(string name) للبحث عن اسم المرشح باستخدام strcmp وزيادة أصواته وإرجاع true أو false." },
+                            { id: "r_w3_pl2", text: "إكمال دالة print_winner(void) لإيجاد أعلى عدد أصوات حصل عليه أي مرشح." },
+                            { id: "r_w3_pl3", text: "طباعة اسم المرشح الفائز (أو جميع المرشحين المتعادلين بالمركز الأول كل في سطر)." },
+                            { id: "r_w3_pl4", text: "اجتياز فحص check50 بدون تعديل أي كود خارج الدالتين المطلوبتين." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/plurality",
+                        submitCmd: "submit50 cs50/problems/2024/x/plurality"
+                    },
+                    {
+                        id: "pset3_runoff_tideman",
+                        name: "Runoff (العادية) أو Tideman (المتقدمة الأسطورية)",
+                        type: "اختر نسخة واحدة (عادية أو متقدمة)",
+                        typeBadgeColor: "purple",
+                        xp: 75,
+                        specUrl: "https://cs50.harvard.edu/x/psets/3/runoff/",
+                        summary: "برمجة نظام انتخابات التفضيل الترتيبي (Ranked-Choice). في Runoff يتم استبعاد المرشح الأقل وإعادة توزيع الأصوات، بينما في Tideman يتم بناء رسم بياني موجه (Graph) وقفل الحواف دون تكوين دورات (Cycles).",
+                        requirements: [
+                            { id: "r_w3_rt1", text: "تحديث مصفوفة التفضيلات preferences بناءً على ترتيب اختيارات كل ناخب." },
+                            { id: "r_w3_rt2", text: "في Runoff: تنفيذ دوال tabulate و print_winner و find_min و is_tie و eliminate." },
+                            { id: "r_w3_rt3", text: "في Tideman: تنفيذ record_preferences و add_pairs و sort_pairs و lock_pairs (مع فحص الدورات بالـ Recursion)." },
+                            { id: "r_w3_rt4", text: "اجتياز كافة اختبارات check50 بنجاح." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/runoff",
+                        submitCmd: "submit50 cs50/problems/2024/x/runoff"
+                    }
+                ]
+            },
+            {
+                week: 4,
+                title: "Memory — الذاكرة والمؤشرات والملفات",
+                subtitle: "النظام الست عشري، المؤشرات Pointers، تخصيص الذاكرة الديناميكي، ومعالجة الصور والملفات",
+                icon: "fa-microchip",
+                color: "red",
+                youtubeId: "F95TWVw756E",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/4/",
+                topics: ["Hexadecimal", "Pointers (& and *)", "Pointer Arithmetic", "malloc & free", "Valgrind", "File I/O (fopen, fread)", "BMP Images"],
+                description: "الغوص تحت غطاء الحاسوب: فهم عناوين الذاكرة الفعلية (Pointers)، وكيف تعمل النصوص في C كـ char *، وإدارة الذاكرة يدوياً عبر malloc و free مع فحص تسرب الذاكرة باستخدام Valgrind، ومعالجة ملفات الصوت والصور.",
+                checkpoints: [
+                    { id: "w4_cp_lec", title: "مشاهدة محاضرة الأسبوع 4 (Memory)", desc: "المؤشرات، إدارة الذاكرة، ومعالجة الملفات", xp: 30, url: "https://cs50.harvard.edu/x/weeks/4/" },
+                    { id: "w4_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 4", desc: "فهم الـ Stack و الـ Heap وتخصيص الذاكرة", xp: 15, url: "https://cs50.harvard.edu/x/notes/4/" },
+                    { id: "w4_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 4)", desc: "Hexadecimal, Pointers, Dynamic Memory Allocation, File Pointers", xp: 25, url: "https://cs50.harvard.edu/x/weeks/4/" },
+                    { id: "w4_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 4 (Problem Set 4)", desc: "Volume, Filter, Recover", xp: 150, url: "https://cs50.harvard.edu/x/psets/4/" }
+                ],
+                psets: [
+                    {
+                        id: "pset4_volume",
+                        name: "Volume — تعديل مستوى الصوت لملفات WAV",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 40,
+                        specUrl: "https://cs50.harvard.edu/x/psets/4/volume/",
+                        summary: "قراءة ملف صوتي بصيغة WAV، ونسخ ترويسة الملف (44 بايت) كما هي، ثم ضرب كل عينة صوتية (16-bit integer) بمعامل تضخيم أو خفض الصوت.",
+                        requirements: [
+                            { id: "r_w4_vo1", text: "قراءة أول 44 بايت (HEADER_SIZE) من ملف الإدخال وكتابتها مباشرة لملف الإخراج باستخدام fread و fwrite." },
+                            { id: "r_w4_vo2", text: "قراءة العينات الصوتية عينة تلو الأخرى في متغير من نوع int16_t." },
+                            { id: "r_w4_vo3", text: "ضرب كل عينة بمعامل الصوت factor وكتابتها في ملف الإخراج وإغلاق الملفات fclose." },
+                            { id: "r_w4_vo4", text: "اجتياز فحص check50 و valgrind دون أي تسريب للذاكرة." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/volume",
+                        submitCmd: "submit50 cs50/problems/2024/x/volume"
+                    },
+                    {
+                        id: "pset4_filter",
+                        name: "Filter (Less أو More) — فلاتر معالجة الصور الرقمية",
+                        type: "اختر نسخة واحدة (عادية أو متقدمة)",
+                        typeBadgeColor: "purple",
+                        xp: 65,
+                        specUrl: "https://cs50.harvard.edu/x/psets/4/filter/less/",
+                        summary: "برمجة فلاتر معالجة صور BMP على مستوى البكسلات (RGBTRIPLE): التدرج الرمادي Grayscale، الانعكاس الأفقي Reflect، التمويه الصندوقي Blur، بالإضافة إلى Sepia (في النسخة العادية) أو كشف الحواف الخوارزمي Edges (في النسخة المتقدمة).",
+                        requirements: [
+                            { id: "r_w4_fi1", text: "تنفيذ دالة grayscale بحساب متوسط قيم Red و Green و Blue وتقريبها عبر round." },
+                            { id: "r_w4_fi2", text: "تنفيذ دالة reflect بعكس ترتيب البكسلات أفقياً في كل صف." },
+                            { id: "r_w4_fi3", text: "تنفيذ دالة sepia (مع وضع سقف للقيمة عند 255) أو دالة edges (حساب مصفوفتي Sobel Gx و Gy)." },
+                            { id: "r_w4_fi4", text: "تنفيذ دالة blur باستخدام نسخة مؤقتة من الصورة (copy) لحساب متوسط البكسلات المحيطة 3x3 بدقة." },
+                            { id: "r_w4_fi5", text: "اجتياز check50 في كافة الفلاتر الأربعة." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/filter/less",
+                        submitCmd: "submit50 cs50/problems/2024/x/filter/less"
+                    },
+                    {
+                        id: "pset4_recover",
+                        name: "Recover — الجنايات الرقمية واستعادة الصور المحذوفة",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 65,
+                        specUrl: "https://cs50.harvard.edu/x/psets/4/recover/",
+                        summary: "تحليل صورة خام لبطاقة ذاكرة كاميرا (card.raw) واسترجاع 50 صورة JPEG محذوفة منها عبر البحث عن التوقيع الرقمي لترويسات JPEG في كتل بحجم 512 بايت.",
+                        requirements: [
+                            { id: "r_w4_re1", text: "فتح ملف البطاقة وقراءة كتل بحجم 512 بايت باستخدام uint8_t buffer[512]." },
+                            { id: "r_w4_re2", text: "اكتشاف بداية كل ملف JPEG جديد عبر فحص أول 4 بايتات: 0xff, 0xd8, 0xff و (buffer[3] & 0xf0) == 0xe0." },
+                            { id: "r_w4_re3", text: "تسمية الصور المستخرجة بالتسلسل 000.jpg إلى 049.jpg باستخدام sprintf." },
+                            { id: "r_w4_re4", text: "إغلاق جميع الملفات وتحرير أي ذاكرة مخصصة بحيث يمر فحص valgrind و check50 بنجاح تام." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/recover",
+                        submitCmd: "submit50 cs50/problems/2024/x/recover"
+                    }
+                ]
+            },
+            {
+                week: 5,
+                title: "Data Structures — هياكل البيانات المتقدمة",
+                subtitle: "القوائم المترابطة Linked Lists، الأشجار الثنائية، جداول التجزئة Hash Tables، والـ Tries",
+                icon: "fa-sitemap",
+                color: "teal",
+                youtubeId: "0euvEdPwQnQ",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/5/",
+                topics: ["Stacks & Queues", "Linked Lists", "Binary Search Trees", "Hash Tables", "Tries", "Memory Management"],
+                description: "بناء هياكل بيانات ديناميكية متطورة في الذاكرة تجمع بين المؤشرات والهياكل (Structs)، وتصميم مدقق إملائي فائق السرعة يحمل قاموساً كاملاً في الذاكرة باستخدام Hash Table.",
+                checkpoints: [
+                    { id: "w5_cp_lec", title: "مشاهدة محاضرة الأسبوع 5 (Data Structures)", desc: "القوائم المترابطة، الأشجار، وجداول التجزئة", xp: 30, url: "https://cs50.harvard.edu/x/weeks/5/" },
+                    { id: "w5_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 5", desc: "دراسة بناء العقد (Nodes) وربطها بالمؤشرات", xp: 15, url: "https://cs50.harvard.edu/x/notes/5/" },
+                    { id: "w5_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 5)", desc: "Singly-Linked Lists, Hash Tables, Tries, Queues & Stacks", xp: 25, url: "https://cs50.harvard.edu/x/weeks/5/" },
+                    { id: "w5_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 5 (Problem Set 5)", desc: "Inheritance & Speller", xp: 160, url: "https://cs50.harvard.edu/x/psets/5/" }
+                ],
+                psets: [
+                    {
+                        id: "pset5_inheritance",
+                        name: "Inheritance — محاكاة وراثة فصائل الدم الجينية",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 55,
+                        specUrl: "https://cs50.harvard.edu/x/psets/5/inheritance/",
+                        summary: "بناء شجرة عائلة ديناميكية باستخدام المؤشرات والـ Recursion لمحاكاة انتقال أليلات فصائل الدم (A, B, O) عبر ثلاثة أجيال، ثم تحرير شجرة الذاكرة بالكامل.",
+                        requirements: [
+                            { id: "r_w5_in1", text: "تخصيص ذاكرة لشخص جديد باستخدام malloc(sizeof(person)) في دالة create_family." },
+                            { id: "r_w5_in2", text: "استدعاء create_family ذاتياً (Recursively) لإنشاء الوالدين وتوريث أليلات عشوائية منهما للطفل." },
+                            { id: "r_w5_in3", text: "تعيين مؤشرات الوالدين إلى NULL وأليلات عشوائية لجيل الأجداد (generations == 1)." },
+                            { id: "r_w5_in4", text: "إكمال دالة free_family لتحرير ذاكرة الوالدين أولاً ثم الشخص نفسه بحيث ينجح فحص valgrind و check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/inheritance",
+                        submitCmd: "submit50 cs50/problems/2024/x/inheritance"
+                    },
+                    {
+                        id: "pset5_speller",
+                        name: "Speller — المدقق الإملائي فائق السرعة (تحدي الذروة في C)",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 110,
+                        specUrl: "https://cs50.harvard.edu/x/psets/5/speller/",
+                        summary: "تصميم وتنفيذ جدول تجزئة (Hash Table) في ملف dictionary.c لتحميل قاموس يضم أكثر من 143,000 كلمة وتدقيق النصوص الضخمة في أجزاء من الثانية مع صفر تسريب للذاكرة.",
+                        requirements: [
+                            { id: "r_w5_sp1", text: "تنفيذ دالة load لقراءة كلمات القاموس وبناء العقد (Nodes) وإدراجها في جدول التجزئة table." },
+                            { id: "r_w5_sp2", text: "تطوير دالة hash(const char *word) تعيد قيمة رقمية متوازنة (غير حساسة لحالة الأحرف)." },
+                            { id: "r_w5_sp3", text: "تنفيذ دالة size لإرجاع عدد الكلمات المحملة في القاموس." },
+                            { id: "r_w5_sp4", text: "تنفيذ دالة check للبحث عن الكلمة في القائمة المترابطة المقابلة باستخدام strcasecmp." },
+                            { id: "r_w5_sp5", text: "تنفيذ دالة unload لتحرير كافة العقد المخصصة في جدول التجزئة واجتياز valgrind و check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/speller",
+                        submitCmd: "submit50 cs50/problems/2024/x/speller"
+                    }
+                ]
+            },
+            {
+                week: 6,
+                title: "Python — لغة بايثون الحديثة",
+                subtitle: "الانتقال إلى لغة عالية المستوى، القوائم والقواميس، قراءة ملفات CSV، وتحليل الحمض النووي DNA",
+                icon: "fa-brands fa-python",
+                color: "blue",
+                youtubeId: "EHi0RDZ31VA",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/6/",
+                topics: ["Python Syntax", "Lists & Tuples", "Dictionaries (dict)", "File I/O & CSV", "Command-Line Args (sys.argv)", "Regular Expressions"],
+                description: "إعادة اكتشاف البرمجة بمرونة وسرعة عالية مع لغة Python: كيف تختصر بايثون عشرات الأسطر من C في سطرين، واستخدام القواميس والمكتبات الجاهزة لتحليل تسلسلات الحمض النووي الجيني.",
+                checkpoints: [
+                    { id: "w6_cp_lec", title: "مشاهدة محاضرة الأسبوع 6 (Python)", desc: "أساسيات بايثون ومقارنتها بلغة C", xp: 30, url: "https://cs50.harvard.edu/x/weeks/6/" },
+                    { id: "w6_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 6", desc: "القوائم، القواميس، والاستثناءات try/except", xp: 15, url: "https://cs50.harvard.edu/x/notes/6/" },
+                    { id: "w6_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 6)", desc: "Python Basics, Lists, Tuples, Dictionaries", xp: 20, url: "https://cs50.harvard.edu/x/weeks/6/" },
+                    { id: "w6_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 6 (Problem Set 6)", desc: "Sentimental (Hello, Mario, Cash/Credit, Readability) + DNA", xp: 150, url: "https://cs50.harvard.edu/x/psets/6/" }
+                ],
+                psets: [
+                    {
+                        id: "pset6_sentimental",
+                        name: "Sentimental (Hello + Mario + Cash/Credit + Readability)",
+                        type: "إلزامي (حزمة بايثون)",
+                        typeBadgeColor: "blue",
+                        xp: 75,
+                        specUrl: "https://cs50.harvard.edu/x/psets/6/",
+                        summary: "إعادة كتابة البرامج الكلاسيكية التي أنجزتها سابقاً بلغة C (Hello و Mario و Cash/Credit و Readability) ولكن هذه المرة باستخدام لغة Python للاستفادة من سهولتها وقوتها.",
+                        requirements: [
+                            { id: "r_w6_se1", text: "إنجاز sentimental-hello: قراءة الاسم وطباعة hello, {name} في بايثون." },
+                            { id: "r_w6_se2", text: "إنجاز sentimental-mario (less أو more): طباعة الهرم باستخدام تكرار السلاسل النصية في بايثون." },
+                            { id: "r_w6_se3", text: "إنجاز sentimental-cash أو sentimental-credit: حساب العملات أو التحقق من البطاقة الائتمانية في بايثون." },
+                            { id: "r_w6_se4", text: "إنجاز sentimental-readability: حساب مؤشر Coleman-Liau في بايثون واجتياز check50 لكل منها." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/sentimental/readability",
+                        submitCmd: "submit50 cs50/problems/2024/x/sentimental/readability"
+                    },
+                    {
+                        id: "pset6_dna",
+                        name: "DNA — البصمة الوراثية ومطابقة الحمض النووي",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 80,
+                        specUrl: "https://cs50.harvard.edu/x/psets/6/dna/",
+                        summary: "كتابة برنامج بايثون يقرأ قاعدة بيانات CSV للأفراد وملف تسلسل DNA مجهول، ويحسب أطول تكرار متتالٍ لكل سلسلة جينية قصيرة (STR) لتحديد صاحب العينة بدقة.",
+                        requirements: [
+                            { id: "r_w6_dn1", text: "التحقق من عدد معاملات سطر الأوامر len(sys.argv) == 3." },
+                            { id: "r_w6_dn2", text: "قراءة ملف قاعدة البيانات CSV إلى الذاكرة باستخدام csv.DictReader." },
+                            { id: "r_w6_dn3", text: "قراءة ملف تسلسل الـ DNA النصي وحساب أطول تكرار لكل STR باستخدام دالة longest_match." },
+                            { id: "r_w6_dn4", text: "مقارنة الأرقام مع كل شخص في قاعدة البيانات وطباعة اسمه أو No match واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/dna",
+                        submitCmd: "submit50 cs50/problems/2024/x/dna"
+                    }
+                ]
+            },
+            {
+                week: 7,
+                title: "SQL — قواعد البيانات العلائقية والتحقيق الجنائي",
+                subtitle: "جداول قواعد البيانات، استعلامات SQLite، الفهارس Indexes، وربط Python مع SQL",
+                icon: "fa-database",
+                color: "orange",
+                youtubeId: "1RCMYG8RUSE",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/7/",
+                topics: ["Relational Databases", "SQLite3", "SELECT / WHERE / JOIN", "Primary & Foreign Keys", "Indexes (B-Trees)", "SQL Injection"],
+                description: "تعلم لغة الاستعلامات الهيكلية SQL لاستخراج وتحليل وتحديث البيانات الضخمة بسرعة، والربط بين الجداول عبر العلاقات، وحل لغز سرقة بطة CS50 في مدينة Fiftyville باستخدام SQL فقط!",
+                checkpoints: [
+                    { id: "w7_cp_lec", title: "مشاهدة محاضرة الأسبوع 7 (SQL)", desc: "قواعد البيانات، العلاقات، الفهارس، وأمن SQL", xp: 30, url: "https://cs50.harvard.edu/x/weeks/7/" },
+                    { id: "w7_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 7", desc: "التدرب على أوامر sqlite3 والاستعلامات المتداخلة", xp: 15, url: "https://cs50.harvard.edu/x/notes/7/" },
+                    { id: "w7_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 7 (Problem Set 7)", desc: "Songs, Movies, Fiftyville Mystery", xp: 160, url: "https://cs50.harvard.edu/x/psets/7/" }
+                ],
+                psets: [
+                    {
+                        id: "pset7_songs",
+                        name: "Songs — تحليل بيانات Spotify باستعلامات SQL",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 35,
+                        specUrl: "https://cs50.harvard.edu/x/psets/7/songs/",
+                        summary: "كتابة 8 استعلامات SQL على قاعدة بيانات تضم أشهر 100 أغنية على Spotify لتحليل الإيقاع والطاقة وتحديد الـ Audio Aura.",
+                        requirements: [
+                            { id: "r_w7_so1", text: "كتابة الاستعلامات من 1.sql إلى 8.sql باستخدام SELECT و WHERE و ORDER BY و AVG." },
+                            { id: "r_w7_so2", text: "الربط مع جدول الفنانين artists لاستخراج أغاني فنان محدد." },
+                            { id: "r_w7_so3", text: "الإجابة عن سؤال التحليل في answers.txt واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/songs",
+                        submitCmd: "submit50 cs50/problems/2024/x/songs"
+                    },
+                    {
+                        id: "pset7_movies",
+                        name: "Movies — استعلامات قاعدة بيانات الأفلام IMDb",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 55,
+                        specUrl: "https://cs50.harvard.edu/x/psets/7/movies/",
+                        summary: "كتابة 13 استعلام SQL متدرج الصعوبة على قاعدة بيانات IMDb الضخمة للربط بين الأفلام والممثلين والمخرجين والتقييمات.",
+                        requirements: [
+                            { id: "r_w7_mo1", text: "إنجاز الاستعلامات الأساسية (1.sql إلى 6.sql) للفلترة والترتيب والتجميع." },
+                            { id: "r_w7_mo2", text: "إنجاز استعلامات الربط المتعدد JOIN (7.sql إلى 11.sql) بين movies و ratings و stars و people." },
+                            { id: "r_w7_mo3", text: "إنجاز الاستعلامين المتقدمين 12.sql و 13.sql (الأفلام المشتركة وزملاء Kevin Bacon) واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/movies",
+                        submitCmd: "submit50 cs50/problems/2024/x/movies"
+                    },
+                    {
+                        id: "pset7_fiftyville",
+                        name: "Fiftyville — لغز التحقيق الجنائي البوليسي بـ SQL",
+                        type: "إلزامي (من أمتع وظائف الدورة)",
+                        typeBadgeColor: "green",
+                        xp: 80,
+                        specUrl: "https://cs50.harvard.edu/x/psets/7/fiftyville/",
+                        summary: "تقمص دور المحقق الجنائي: سُرقت بطة CS50 يوم 28 يوليو في شارع Humphrey! استجوب قواعد بيانات تقارير الجريمة، كاميرات المخبز، الصراف الآلي، المكالمات الهاتفية، ورحلات الطيران لكشف اللص، المدينة التي هرب إليها، وشريكه.",
+                        requirements: [
+                            { id: "r_w7_fi1", text: "استعلام جدول crime_scene_reports و interviews لقراءة شهادات الشهود الثلاثة." },
+                            { id: "r_w7_fi2", text: "تقاطع بيانات bakery_security_logs و atm_transactions و phone_calls." },
+                            { id: "r_w7_fi3", text: "فحص جدول flights و passengers لتحديد أول رحلة صباح اليوم التالي والوجهة والراكب المشتبه به." },
+                            { id: "r_w7_fi4", text: "توثيق استعلاماتك في log.sql وتعبئة الأسماء الثلاثة في answers.txt واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/fiftyville",
+                        submitCmd: "submit50 cs50/problems/2024/x/fiftyville"
+                    }
+                ]
+            },
+            {
+                week: 8,
+                title: "HTML, CSS, JavaScript — تطوير الويب",
+                subtitle: "بروتوكولات الإنترنت HTTP/TCP/IP، هيكلة صفحات الويب، التصميم بـ Bootstrap، والتفاعل بـ JS",
+                icon: "fa-globe",
+                color: "purple",
+                youtubeId: "c9Ft31N9r7w",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/8/",
+                topics: ["TCP/IP & DNS", "HTTP Status Codes", "HTML5 Tags", "CSS & Bootstrap", "DOM Manipulation", "JavaScript Events"],
+                description: "فهم كيف يعمل الإنترنت والشبكات من الداخل، وبناء واجهات مواقع ويب متكاملة وتفاعلية تعمل مباشرة في المتصفح باستخدام الثلاثي الأساسي للويب: HTML و CSS و JavaScript.",
+                checkpoints: [
+                    { id: "w8_cp_lec", title: "مشاهدة محاضرة الأسبوع 8 (HTML, CSS, JS)", desc: "الشبكات، بناء الصفحات، والتلاعب بالـ DOM", xp: 30, url: "https://cs50.harvard.edu/x/weeks/8/" },
+                    { id: "w8_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 8", desc: "أمثلة HTML و CSS والأحداث التفاعلية في JS", xp: 15, url: "https://cs50.harvard.edu/x/notes/8/" },
+                    { id: "w8_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 8)", desc: "Internet Primer, IP, TCP, HTTP, HTML, CSS, JavaScript, DOM", xp: 25, url: "https://cs50.harvard.edu/x/weeks/8/" },
+                    { id: "w8_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 8 (Problem Set 8)", desc: "Trivia & Homepage", xp: 140, url: "https://cs50.harvard.edu/x/psets/8/" }
+                ],
+                psets: [
+                    {
+                        id: "pset8_trivia",
+                        name: "Trivia — صفحة الأسئلة التفاعلية بـ JavaScript",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 50,
+                        specUrl: "https://cs50.harvard.edu/x/psets/8/trivia/",
+                        summary: "تصميم صفحة مسابقات تفاعلية تتضمن سؤال اختيار من متعدد وسؤال إجابة نصية حرة، تتغير ألوانها وتظهر نتيجتها فورياً عبر JavaScript DOM Events.",
+                        requirements: [
+                            { id: "r_w8_tr1", text: "إنشاء سؤال الاختيار من متعدد (Part 1) مع 3 أزرار إجابات على الأقل." },
+                            { id: "r_w8_tr2", text: "تلوين الزر بالأخضر مع عبارة Correct! عند الإجابة الصحيحة، وبالأحمر مع Incorrect عند الخطأ." },
+                            { id: "r_w8_tr3", text: "إنشاء سؤال الإجابة النصية الحرة (Part 2) مع حقل input وزر تحقق يتفاعل مع الإجابة." },
+                            { id: "r_w8_tr4", text: "تسليم الوظيفة عبر submit50." }
+                        ],
+                        checkCmd: "لا يتطلب check50 آلي — يتم التحقق بصرياً عبر http-server",
+                        submitCmd: "submit50 cs50/problems/2024/x/trivia"
+                    },
+                    {
+                        id: "pset8_homepage",
+                        name: "Homepage — بناء موقعك الشخصي المتكامل",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 90,
+                        specUrl: "https://cs50.harvard.edu/x/psets/8/homepage/",
+                        summary: "تصميم وتطوير موقع ويب شخصي متعدد الصفحات يعرّف بك أو بهواياتك باستخدام HTML و CSS و Bootstrap و JavaScript.",
+                        requirements: [
+                            { id: "r_w8_ho1", text: "إنشاء 4 صفحات HTML مختلفة على الأقل (من ضمنها index.html) مع إمكانية التنقل بينها عبر الروابط." },
+                            { id: "r_w8_ho2", text: "استخدام 10 وسوم HTML مميزة على الأقل (بخلاف html, head, body, title)." },
+                            { id: "r_w8_ho3", text: "دمج مكتبة Bootstrap واستخدام مكون واحد منها على الأقل." },
+                            { id: "r_w8_ho4", text: "كتابة ملف styles.css مخصص يضم 5 محددات CSS و 5 خصائص تصميم مختلفة على الأقل." },
+                            { id: "r_w8_ho5", text: "إضافة ميزة تفاعلية واحدة على الأقل باستخدام JavaScript وتجربة التوافق مع شاشات الجوال." }
+                        ],
+                        checkCmd: "http-server لمعاينة الموقع محلياً",
+                        submitCmd: "submit50 cs50/problems/2024/x/homepage"
+                    }
+                ]
+            },
+            {
+                week: 9,
+                title: "Flask — تطبيقات الويب الخلفية (Back-End)",
+                subtitle: "بناء السيرفرات بـ Python Flask، القوالب Jinja، الجلسات Sessions، وتداول الأسهم",
+                icon: "fa-server",
+                color: "green",
+                youtubeId: "-aqUek49iL8",
+                officialWeekUrl: "https://cs50.harvard.edu/x/weeks/9/",
+                topics: ["Flask Framework", "Routes (@app.route)", "GET & POST", "Jinja2 Templates", "Cookies & Sessions", "AJAX / JSON APIs"],
+                description: "الانتقال من المواقع الثابتة إلى تطبيقات الويب الديناميكية الكاملة (Full-Stack) التي تجمع بين Python و SQL و HTML/JS باستخدام إطار العمل Flask لبناء منصة تداول أسهم مالية متكاملة.",
+                checkpoints: [
+                    { id: "w9_cp_lec", title: "مشاهدة محاضرة الأسبوع 9 (Flask)", desc: "تطوير السيرفر، معالجة النماذج، والجلسات", xp: 30, url: "https://cs50.harvard.edu/x/weeks/9/" },
+                    { id: "w9_cp_notes", title: "مراجعة الملاحظات والأكواد المصدرية للأسبوع 9", desc: "دراسة هيكلية مشاريع Flask وقوالب Jinja", xp: 15, url: "https://cs50.harvard.edu/x/notes/9/" },
+                    { id: "w9_cp_shorts", title: "مشاهدة الفيديوهات القصيرة (Shorts — Week 9)", desc: "Flask, AJAX", xp: 20, url: "https://cs50.harvard.edu/x/weeks/9/" },
+                    { id: "w9_cp_pset", title: "إنجاز وتسليم وظائف الأسبوع 9 (Problem Set 9)", desc: "Birthdays & C$50 Finance", xp: 170, url: "https://cs50.harvard.edu/x/psets/9/" }
+                ],
+                psets: [
+                    {
+                        id: "pset9_birthdays",
+                        name: "Birthdays — تطبيق ويب لتسجيل أعياد الميلاد",
+                        type: "إلزامي",
+                        typeBadgeColor: "blue",
+                        xp: 50,
+                        specUrl: "https://cs50.harvard.edu/x/psets/9/birthdays/",
+                        summary: "بناء تطبيق ويب بـ Flask و SQLite يعرض قائمة أعياد الميلاد المحفوظة في قاعدة البيانات ويتيح إضافة أعياد ميلاد جديدة عبر نموذج POST.",
+                        requirements: [
+                            { id: "r_w9_bi1", text: "عند طلب GET: استعلام كافة الصفوف من جدول birthdays وتمريرها لقالب index.html وعرضها في جدول." },
+                            { id: "r_w9_bi2", text: "إضافة نموذج HTML في index.html لإدخال الاسم والشهر واليوم وإرساله عبر POST." },
+                            { id: "r_w9_bi3", text: "عند طلب POST: التحقق من البيانات وإدراجها في قاعدة البيانات عبر db.execute ثم إعادة التوجيه لـ /." }
+                        ],
+                        checkCmd: "flask run لتجربة التطبيق في المتصفح",
+                        submitCmd: "submit50 cs50/problems/2024/x/birthdays"
+                    },
+                    {
+                        id: "pset9_finance",
+                        name: "C$50 Finance — منصة تداول الأسهم المالية الكاملة",
+                        type: "إلزامي (المشروع المتكامل)",
+                        typeBadgeColor: "green",
+                        xp: 120,
+                        specUrl: "https://cs50.harvard.edu/x/psets/9/finance/",
+                        summary: "تطوير منصة ويب مالية متكاملة تتيح للمستخدمين إنشاء حسابات مشفرة، الاستعلام عن أسعار الأسهم الحقيقية لحظياً، شراء وبيع الأسهم، وتتبع محفظتهم الاستثمارية وسجل المعاملات.",
+                        requirements: [
+                            { id: "r_w9_fn1", text: "إكمال مسار /register لتسجيل المستخدمين وتشفير كلمة المرور عبر generate_password_hash." },
+                            { id: "r_w9_fn2", text: "إكمال مسار /quote للاستعلام عن سعر السهم باستخدام دالة lookup()." },
+                            { id: "r_w9_fn3", text: "إكمال مسار /buy وإنشاء جدول المعاملات transactions في SQLite وخصم الرصيد النقدي." },
+                            { id: "r_w9_fn4", text: "إكمال الصفحة الرئيسية / لعرض جدول الأسهم المملوكة، قيمتها الحالية، والرصيد الكلي." },
+                            { id: "r_w9_fn5", text: "إكمال مساري /sell و /history بالإضافة إلى لمستك الشخصية (Personal Touch) واجتياز check50." }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/finance",
+                        submitCmd: "submit50 cs50/problems/2024/x/finance"
+                    }
+                ]
+            },
+            {
+                week: 10,
+                title: "The End & Final Project — التخرج والمشروع النهائي",
+                subtitle: "الأمن السيبراني، الذكاء الاصطناعي، وتطوير مشروع التخرج النهائي للحصول على شهادة هارفارد",
+                icon: "fa-trophy",
+                color: "orange",
+                youtubeId: "6v2L2UGZJAM",
+                officialWeekUrl: "https://cs50.harvard.edu/x/project/",
+                topics: ["Cybersecurity", "Artificial Intelligence", "Software Engineering", "Git & GitHub", "Final Project Architecture", "CS50 Certificate"],
+                description: "المحطة الختامية في CS50x! استثمر كل ما تعلمته لبناء مشروع برمجي كامل من اختيارك (تطبيق ويب، تطبيق جوال، أداة سطر أوامر، لعبة، أو إضافة متصفح) وتوثيقه للحصول على شهادة CS50x الرسمية من هارفارد.",
+                checkpoints: [
+                    { id: "w10_cp_lec", title: "مشاهدة المحاضرة الختامية (Week 10 — Cybersecurity / The End)", desc: "الأمن السيبراني ومستقبل رحلتك في علوم الحاسوب", xp: 30, url: "https://cs50.harvard.edu/x/weeks/10/" },
+                    { id: "w10_cp_idea", title: "اختيار فكرة المشروع النهائي وتصميم هيكلته", desc: "تحديد التقنيات واللغات وقواعد البيانات المستخدمة", xp: 50, url: "https://cs50.harvard.edu/x/project/" },
+                    { id: "w10_cp_code", title: "برمجة المشروع النهائي واختباره بالكامل", desc: "كتابة الكود المصدري وتنظيم ملفات المشروع", xp: 150, url: "https://cs50.harvard.edu/x/project/" },
+                    { id: "w10_cp_submit", title: "توثيق README.md وتصوير الفيديو وتسليم المشروع", desc: "استلام شهادة CS50x الرسمية من cs50.me/cs50x", xp: 100, url: "https://cs50.me/cs50x" }
+                ],
+                psets: [
+                    {
+                        id: "pset10_project",
+                        name: "CS50x Final Project — مشروع التخرج النهائي",
+                        type: "تخرج",
+                        typeBadgeColor: "orange",
+                        xp: 300,
+                        specUrl: "https://cs50.harvard.edu/x/project/",
+                        summary: "ذروة رحلتك في CS50x: بناء مشروع برمجي حقيقي يحل مشكلة واقعية أو يقدم تجربة مبتكرة بأي لغة أو تقنية تفضلها، مع كتابة توثيق شامل وتسجيل فيديو استعراضي قصير.",
+                        requirements: [
+                            { id: "r_w10_pr1", text: "تطوير مشروع برمجي متكامل يفوق في حجمه وتعقيده الوظائف الأسبوعية العادية." },
+                            { id: "r_w10_pr2", text: "كتابة ملف README.md شامل (لا يقل عن 500 كلمة) يشرح فكرة المشروع، كل ملف فيه، وقراراتك التصميمية." },
+                            { id: "r_w10_pr3", text: "تسجيل فيديو استعراضي قصير (حتى 3 دقائق) يعرض المشروع أثناء عمله ورفعه على YouTube." },
+                            { id: "r_w10_pr4", text: "اجتياز check50 للتحقق من README.md وتسليم المشروع عبر submit50." },
+                            { id: "r_w10_pr5", text: "فتح سجل الدرجات cs50.me/cs50x واستخراج شهادة التخرج الرسمية من جامعة هارفارد!" }
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/project",
+                        submitCmd: "submit50 cs50/problems/2024/x/project"
+                    }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 2. APPLICATION STATE & STORAGE (FIREBASE + LOCAL)
+        // ==========================================
+        const LOCAL_STORAGE_KEY = 'cs50x_apple_studio_state_v2';
+
+        let appState = {
+            theme: 'light',
+            activeWeek: 0,
+            activeTab: 'lecture',
+            strictLockMode: false,
+            onboardingCompleted: false,
+            onboardingStepsChecked: [],
+            githubUsername: '',
+            displayName: '',
+            photoURL: '',
+            codespaceUrl: 'https://cs50.dev/',
+            completedCheckpoints: [],
+            completedReqs: [],
+            completedPsets: [],
+            customVideoUrls: {},
+            psetRepoLinks: {},
+            weekNotes: {}
+        };
+
+        // Load immediately from LocalStorage for instant zero-flicker UI
+        try {
+            const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                appState = { ...appState, ...parsed };
+            }
+        } catch (err) {
+            console.warn("Local cache read skipped:", err);
+        }
+
+        // Firebase Setup
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cs50-gamified-tracker';
+        let db = null, auth = null, currentUserId = null, cloudSaveTimer = null;
+
+        async function initFirebaseSync() {
+            const syncText = document.getElementById('sync-text');
+            const syncDot = document.getElementById('sync-dot');
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            currentUserId = user.uid;
+                            if (syncText) syncText.textContent = 'الحفظ التلقائي مفعّل';
+                            if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
+
+                            const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'data', 'progress');
+                            const snap = await getDoc(docRef);
+                            if (snap.exists()) {
+                                const cloudData = snap.data();
+                                appState = { ...appState, ...cloudData };
+                                saveLocal();
+                                applyTheme();
+                                renderAll();
+                                if (appState.onboardingCompleted) {
+                                    closeOnboardingModal(false);
+                                }
+                            } else {
+                                await setDoc(docRef, appState);
+                            }
+                        }
+                    });
+                } else {
+                    if (syncText) syncText.textContent = 'حفظ محلي تلقائي';
+                    if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
+                }
+            } catch (e) {
+                console.warn("Running in local persistence mode:", e);
+                if (syncText) syncText.textContent = 'حفظ محلي تلقائي';
+                if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
+            }
+        }
+
+        function saveLocal() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {}
+        }
+
+        function persistState() {
+            saveLocal();
+            clearTimeout(cloudSaveTimer);
+            cloudSaveTimer = setTimeout(async () => {
+                if (db && currentUserId) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'data', 'progress');
+                        await setDoc(docRef, appState);
+                        const syncText = document.getElementById('sync-text');
+                        if (syncText) {
+                            syncText.textContent = 'تم الحفظ ✓';
+                            setTimeout(() => { if (syncText) syncText.textContent = 'الحفظ التلقائي مفعّل'; }, 2000);
+                        }
+                    } catch (e) {
+                        console.warn("Cloud sync error:", e);
+                    }
+                }
+            }, 600);
+        }
+
+        // ==========================================
+        // 3. CALCULATIONS & GAMIFICATION HELPERS
+        // ==========================================
+        function autoCompletePreviousWeeksEssentials(targetWeekIndex) {
+            const target = parseInt(targetWeekIndex, 10);
+            if (isNaN(target) || target <= 0) return;
+
+            for (let w = 0; w < target; w++) {
+                const level = CS50X_DATA[w];
+                if (!level) continue;
+
+                // 1. Mark ONLY Lecture & Problem Sets checkpoints in previous weeks
+                level.checkpoints.forEach(cp => {
+                    if (cp.id.endsWith('_cp_lec') || cp.id.endsWith('_cp_pset')) {
+                        if (!appState.completedCheckpoints.includes(cp.id)) {
+                            appState.completedCheckpoints.push(cp.id);
+                        }
+                    }
+                });
+
+                // 2. Mark all Problem Sets and their requirements in previous weeks
+                level.psets.forEach(pset => {
+                    if (!appState.completedPsets.includes(pset.id)) {
+                        appState.completedPsets.push(pset.id);
+                    }
+                    pset.requirements.forEach(req => {
+                        if (!appState.completedReqs.includes(req.id)) {
+                            appState.completedReqs.push(req.id);
+                        }
+                    });
+                });
+            }
+        }
+
+        function isWeekEssentialsCompleted(weekIndex) {
+            const level = CS50X_DATA[weekIndex];
+            if (!level) return false;
+            const lecDone = level.checkpoints
+                .filter(cp => cp.id.endsWith('_cp_lec'))
+                .every(cp => appState.completedCheckpoints.includes(cp.id));
+            const psetsDone = level.psets.every(pset => isPsetCompleted(pset));
+            return lecDone && psetsDone;
+        }
+
+        function isWeekUnlocked(weekIndex) {
+            if (!appState.strictLockMode || weekIndex === 0) return true;
+            // Unlocked if previous week has >= 75% progress OR its essentials (lecture + psets) are completed
+            return getWeekProgress(weekIndex - 1) >= 75 || isWeekEssentialsCompleted(weekIndex - 1);
+        }
+
+        function isPsetCompleted(pset) {
+            if (appState.completedPsets.includes(pset.id)) return true;
+            // Or if all sub-requirements of this pset are checked
+            return pset.requirements.length > 0 && pset.requirements.every(r => appState.completedReqs.includes(r.id));
+        }
+
+        function getWeekProgress(weekIndex) {
+            const level = CS50X_DATA[weekIndex];
+            if (!level) return 0;
+
+            let totalItems = level.checkpoints.length;
+            let doneItems = level.checkpoints.filter(cp => appState.completedCheckpoints.includes(cp.id)).length;
+
+            level.psets.forEach(pset => {
+                totalItems += pset.requirements.length;
+                doneItems += pset.requirements.filter(r => appState.completedReqs.includes(r.id)).length;
+            });
+
+            return totalItems === 0 ? 0 : Math.round((doneItems / totalItems) * 100);
+        }
+
+        function calculateGlobalMetrics() {
+            let totalXP = 0;
+            let totalCheckpoints = 0, doneCheckpoints = 0;
+            let totalPsets = 0, donePsets = 0;
+            let totalReqs = 0, doneReqs = 0;
+
+            CS50X_DATA.forEach(level => {
+                level.checkpoints.forEach(cp => {
+                    totalCheckpoints++;
+                    if (appState.completedCheckpoints.includes(cp.id)) {
+                        doneCheckpoints++;
+                        totalXP += cp.xp;
+                    }
+                });
+
+                level.psets.forEach(pset => {
+                    totalPsets++;
+                    const psetDone = isPsetCompleted(pset);
+                    if (psetDone) {
+                        donePsets++;
+                        totalXP += pset.xp;
+                    }
+                    pset.requirements.forEach(req => {
+                        totalReqs++;
+                        if (appState.completedReqs.includes(req.id)) {
+                            doneReqs++;
+                            if (!psetDone) totalXP += 5; // Partial XP per sub-requirement
+                        }
+                    });
+                });
+            });
+
+            const grandTotal = totalCheckpoints + totalReqs;
+            const grandDone = doneCheckpoints + doneReqs;
+            const overallPercent = grandTotal === 0 ? 0 : Math.round((grandDone / grandTotal) * 100);
+
+            return {
+                totalXP,
+                totalCheckpoints, doneCheckpoints,
+                totalPsets, donePsets,
+                totalReqs, doneReqs,
+                overallPercent
+            };
+        }
+
+        function extractYoutubeEmbedUrl(inputUrl, fallbackId) {
+            if (!inputUrl || !inputUrl.trim()) {
+                return `https://www.youtube.com/embed/${fallbackId}?rel=0`;
+            }
+            const raw = inputUrl.trim();
+            // Handle standard watch?v=, youtu.be/, or embed/
+            const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = raw.match(regExp);
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}?rel=0`;
+            }
+            return `https://www.youtube.com/embed/${fallbackId}?rel=0`;
+        }
+
+        // ==========================================
+        // 4. UI RENDERING ENGINE
+        // ==========================================
+        function applyTheme() {
+            const htmlEl = document.documentElement;
+            if (appState.theme === 'dark') {
+                htmlEl.classList.add('dark');
+                htmlEl.classList.remove('light');
+            } else {
+                htmlEl.classList.add('light');
+                htmlEl.classList.remove('dark');
+            }
+        }
+
+        window.toggleTheme = function() {
+            appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+            applyTheme();
+            persistState();
+        };
+
+        window.toggleStrictLockMode = function(checked) {
+            appState.strictLockMode = checked;
+            persistState();
+            renderSidebarLevels();
+            showToast(checked ? 'تم تفعيل قفل المستويات المتسلسل 🎮' : 'تم فتح كافة المستويات للتصفح الحر 🔓');
+        };
+
+        function updateHeaderAndRings() {
+            const metrics = calculateGlobalMetrics();
+
+            // Header XP & Rank
+            document.getElementById('header-xp').textContent = `${metrics.totalXP} XP`;
+            const rankLevel = Math.min(10, Math.floor(metrics.overallPercent / 10));
+            document.getElementById('header-rank').textContent =
+                metrics.overallPercent === 100 ? 'خريج CS50x 🏆' : `المستوى ${rankLevel}`;
+
+            // Header GitHub label & Avatar based on typed username
+            const ghLabel = document.getElementById('header-github-label');
+            const headerAvatar = document.getElementById('header-avatar');
+            const headerIcon = document.getElementById('header-icon');
+            const cleanUsername = (appState.githubUsername || '').replace(/^@/, '').trim();
+
+            if (cleanUsername) {
+                ghLabel.textContent = `@${cleanUsername}`;
+                if (headerAvatar && headerIcon) {
+                    headerAvatar.src = `https://github.com/${encodeURIComponent(cleanUsername)}.png?size=64`;
+                    headerAvatar.classList.remove('hidden');
+                    headerIcon.classList.add('hidden');
+                }
+            } else {
+                ghLabel.textContent = 'حساباتي ومنصات CS50';
+                if (headerAvatar && headerIcon) {
+                    headerAvatar.classList.add('hidden');
+                    headerIcon.classList.remove('hidden');
+                }
+            }
+
+            // Activity Rings
+            document.getElementById('overall-percentage-badge').textContent = `${metrics.overallPercent}%`;
+            document.getElementById('stat-checkpoints').textContent = `${metrics.doneCheckpoints}/${metrics.totalCheckpoints}`;
+            document.getElementById('stat-psets').textContent = `${metrics.donePsets}/${metrics.totalPsets}`;
+            document.getElementById('stat-reqs').textContent = `${metrics.doneReqs}/${metrics.totalReqs}`;
+
+            const setRingOffset = (id, radius, ratio) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const circumference = 2 * Math.PI * radius;
+                const clamped = Math.max(0, Math.min(1, ratio || 0));
+                el.style.strokeDashoffset = circumference - clamped * circumference;
+            };
+
+            setRingOffset('ring-checkpoints', 42, metrics.doneCheckpoints / metrics.totalCheckpoints);
+            setRingOffset('ring-psets', 32, metrics.donePsets / metrics.totalPsets);
+            setRingOffset('ring-reqs', 22, metrics.doneReqs / metrics.totalReqs);
+
+            // Strict lock checkbox state
+            const lockToggle = document.getElementById('strict-lock-toggle');
+            if (lockToggle) lockToggle.checked = !!appState.strictLockMode;
+        }
+
+        function renderSidebarLevels() {
+            const container = document.getElementById('levels-nav-list');
+            container.innerHTML = '';
+
+            CS50X_DATA.forEach((level, idx) => {
+                const unlocked = isWeekUnlocked(idx);
+                const progress = getWeekProgress(idx);
+                const isSelected = appState.activeWeek === idx;
+                const isDone = progress === 100;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.disabled = !unlocked;
+                btn.onclick = () => selectLevel(idx);
+
+                btn.className = `w-full text-right p-3 rounded-2xl transition-all flex items-center justify-between gap-3 ${
+                    isSelected
+                        ? 'bg-apple-blue text-white shadow-md shadow-apple-blue/25'
+                        : unlocked
+                            ? 'hover:bg-black/5 dark:hover:bg-white/5 text-apple-textLight dark:text-apple-textDark'
+                            : 'opacity-45 cursor-not-allowed'
+                }`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold ${
+                            isSelected
+                                ? 'bg-white/20 text-white'
+                                : isDone
+                                    ? 'bg-apple-green/15 text-apple-green'
+                                    : 'bg-black/5 dark:bg-white/10 text-apple-blue dark:text-apple-blueDark'
+                        }">
+                            ${!unlocked ? '<i class="fas fa-lock text-xs"></i>' : isDone ? '<i class="fas fa-check"></i>' : `<i class="fas ${level.icon}"></i>`}
+                        </div>
+                        <div class="truncate">
+                            <div class="text-[11px] font-semibold ${isSelected ? 'text-white/80' : 'text-apple-secondary'}">
+                                المستوى ${level.week} • Week ${level.week}
+                            </div>
+                            <div class="text-xs font-extrabold truncate">${level.title}</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end flex-shrink-0">
+                        <span class="text-[11px] font-mono font-bold ${isSelected ? 'text-white' : isDone ? 'text-apple-green' : 'text-apple-secondary'}">
+                            ${progress}%
+                        </span>
+                        <div class="w-12 h-1.5 rounded-full ${isSelected ? 'bg-white/30' : 'bg-gray-200 dark:bg-white/10'} overflow-hidden mt-1">
+                            <div class="h-full rounded-full ${isSelected ? 'bg-white' : isDone ? 'bg-apple-green' : 'bg-apple-blue'}" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(btn);
+            });
+        }
+
+        window.selectLevel = function(weekIndex) {
+            if (!isWeekUnlocked(weekIndex)) {
+                showToast('أكمل 75% على الأقل من المستوى السابق لفتح هذا المستوى، أو أوقف قفل المستويات المتسلسل.');
+                return;
+            }
+            appState.activeWeek = weekIndex;
+            persistState();
+            renderSidebarLevels();
+            renderActiveLevelWorkspace();
+        };
+
+        window.switchTab = function(tabName) {
+            appState.activeTab = tabName;
+            persistState();
+            updateTabButtonsUI();
+        };
+
+        function updateTabButtonsUI() {
+            const tabs = ['lecture', 'checkpoints', 'psets', 'notes'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const sec = document.getElementById(`tab-content-${t}`);
+                if (!btn || !sec) return;
+
+                if (appState.activeTab === t) {
+                    btn.className = "tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-white dark:bg-apple-elevatedDark shadow-sm text-apple-textLight dark:text-white";
+                    sec.classList.remove('hidden');
+                } else {
+                    btn.className = "tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-apple-secondary hover:text-apple-textLight dark:hover:text-white";
+                    sec.classList.add('hidden');
+                }
+            });
+        }
+
+        function renderActiveLevelWorkspace() {
+            const level = CS50X_DATA[appState.activeWeek] || CS50X_DATA[0];
+            const progress = getWeekProgress(appState.activeWeek);
+
+            // 1. Hero Header
+            document.getElementById('active-level-badge').textContent = `المستوى ${level.week} • Week ${level.week}`;
+            const statusEl = document.getElementById('active-level-status');
+            if (progress === 100) {
+                statusEl.textContent = 'مكتمل بالكامل ✓';
+                statusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-apple-green/15 text-apple-green';
+            } else if (progress > 0) {
+                statusEl.textContent = 'قيد الدراسة والتنفيذ';
+                statusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-apple-orange/15 text-apple-orange';
+            } else {
+                statusEl.textContent = 'جاهز للبدء';
+                statusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-apple-blue/15 text-apple-blue dark:text-apple-blueDark';
+            }
+
+            const levelTotalXP = level.checkpoints.reduce((a, c) => a + c.xp, 0) + level.psets.reduce((a, p) => a + p.xp, 0);
+            document.getElementById('active-level-xp-badge').textContent = `+${levelTotalXP} XP`;
+            document.getElementById('active-level-title').textContent = level.title;
+            document.getElementById('active-level-desc').textContent = level.description;
+            document.getElementById('active-level-official-link').href = level.officialWeekUrl;
+
+            document.getElementById('active-level-progress-bar').style.width = `${progress}%`;
+            document.getElementById('active-level-progress-text').textContent = `${progress}%`;
+
+            // Concept pills
+            const topicsContainer = document.getElementById('active-level-topics');
+            topicsContainer.innerHTML = level.topics.map(t =>
+                `<span class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-apple-bgLight dark:bg-apple-elevatedDark text-apple-secondary border border-black/5 dark:border-white/5">${t}</span>`
+            ).join('');
+
+            // Tab Badges
+            const doneCPs = level.checkpoints.filter(cp => appState.completedCheckpoints.includes(cp.id)).length;
+            document.getElementById('tab-badge-checkpoints').textContent = `${doneCPs}/${level.checkpoints.length}`;
+
+            const donePsetsCount = level.psets.filter(p => isPsetCompleted(p)).length;
+            document.getElementById('tab-badge-psets').textContent = `${donePsetsCount}/${level.psets.length}`;
+
+            // 2. Lecture Video & Official Resources Tab
+            const customUrl = appState.customVideoUrls[level.week] || '';
+            const embedUrl = extractYoutubeEmbedUrl(customUrl, level.youtubeId);
+            const iframe = document.getElementById('lecture-youtube-iframe');
+            if (iframe.src !== embedUrl) {
+                iframe.src = embedUrl;
+            }
+            document.getElementById('custom-youtube-input').value = customUrl;
+            document.getElementById('youtube-external-btn').href = customUrl || `https://www.youtube.com/watch?v=${level.youtubeId}`;
+
+            const resourcesList = document.getElementById('official-resources-list');
+            const w = level.week;
+            const resources = [
+                { title: `صفحة الأسبوع ${w} الرسمية في هارفارد`, sub: `cs50.harvard.edu/x/weeks/${w}/`, icon: 'fa-building-columns', color: 'blue', url: level.officialWeekUrl },
+                { title: `ملخص المحاضرة الشامل (Lecture ${w} Notes)`, sub: 'شرح مكتوب لجميع الأمثلة والأفكار', icon: 'fa-book-open', color: 'green', url: w === 10 ? 'https://cs50.harvard.edu/x/weeks/10/' : `https://cs50.harvard.edu/x/notes/${w}/` },
+                { title: `الشرائح والأكواد المصدرية (Slides & Source Code)`, sub: 'ملفات الكود التي كتبها ديفيد مالان في المحاضرة', icon: 'fa-file-code', color: 'purple', url: level.officialWeekUrl },
+                { title: `صفحة وظائف الأسبوع (Problem Set ${w})`, sub: 'المواصفات الرسمية الكاملة على موقع الدورة', icon: 'fa-laptop-code', color: 'orange', url: w === 10 ? 'https://cs50.harvard.edu/x/project/' : `https://cs50.harvard.edu/x/psets/${w}/` }
+            ];
+
+            resourcesList.innerHTML = resources.map(r => `
+                <a href="${r.url}" target="_blank" rel="noopener noreferrer"
+                   class="p-3 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-blue border border-transparent transition flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-apple-${r.color}/15 text-apple-${r.color} flex items-center justify-center text-sm">
+                            <i class="fas ${r.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold group-hover:text-apple-blue transition">${r.title}</div>
+                            <div class="text-[11px] text-apple-secondary">${r.sub}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-arrow-up-left-from-square text-xs text-apple-secondary group-hover:text-apple-blue transition"></i>
+                </a>
+            `).join('');
+
+            // 3. Render Checkpoints Tab
+            renderCheckpointsTab(level);
+
+            // 4. Render Problem Sets & Requirements Tab
+            renderPsetsTab(level);
+
+            // 5. Render Notes Tab
+            document.getElementById('level-notes-textarea').value = appState.weekNotes[level.week] || '';
+
+            updateTabButtonsUI();
+        }
+
+        function renderCheckpointsTab(level) {
+            const container = document.getElementById('checkpoints-list-container');
+            container.innerHTML = level.checkpoints.map((cp, index) => {
+                const checked = appState.completedCheckpoints.includes(cp.id);
+                return `
+                    <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border ${checked ? 'border-apple-green/40 bg-apple-green/5' : 'border-transparent'} transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <label class="flex items-start sm:items-center gap-3.5 cursor-pointer flex-grow select-none">
+                            <input type="checkbox" class="apple-checkbox mt-0.5 sm:mt-0"
+                                   ${checked ? 'checked' : ''}
+                                   onchange="toggleCheckpoint('${cp.id}')">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-apple-secondary">خطوة ${index + 1}</span>
+                                    <span class="text-sm font-extrabold ${checked ? 'line-through text-apple-secondary' : ''}">${cp.title}</span>
+                                </div>
+                                <p class="text-xs text-apple-secondary mt-1">${cp.desc}</p>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-apple-orange/15 text-apple-orange">
+                                +${cp.xp} XP
+                            </span>
+                            <a href="${cp.url}" target="_blank" rel="noopener noreferrer"
+                               class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-blue hover:text-white text-xs font-bold transition apple-card">
+                                فتح المورد ↗
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderPsetsTab(level) {
+            const container = document.getElementById('psets-cards-container');
+            container.innerHTML = level.psets.map((pset, idx) => {
+                const doneReqsCount = pset.requirements.filter(r => appState.completedReqs.includes(r.id)).length;
+                const totalReqsCount = pset.requirements.length;
+                const psetPercent = totalReqsCount === 0 ? 0 : Math.round((doneReqsCount / totalReqsCount) * 100);
+                const fullyDone = isPsetCompleted(pset);
+                const savedRepoLink = appState.psetRepoLinks[pset.id] || '';
+
+                const reqsHtml = pset.requirements.map(req => {
+                    const isReqChecked = appState.completedReqs.includes(req.id);
+                    return `
+                        <label class="flex items-start gap-3 p-3 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition select-none">
+                            <input type="checkbox" class="apple-checkbox apple-subcheck mt-0.5"
+                                   ${isReqChecked ? 'checked' : ''}
+                                   onchange="toggleRequirement('${req.id}', '${pset.id}')">
+                            <span class="text-xs leading-relaxed font-medium ${isReqChecked ? 'line-through text-apple-secondary' : ''}">
+                                ${req.text}
+                            </span>
+                        </label>
+                    `;
+                }).join('');
+
+                return `
+                    <article class="bg-white dark:bg-apple-cardDark rounded-3xl p-6 apple-card space-y-5 ${fullyDone ? 'ring-2 ring-apple-green/50' : ''}">
+                        <!-- Pset Chapter Header -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-white/10">
+                            <div class="space-y-1.5">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-${pset.typeBadgeColor}/15 text-apple-${pset.typeBadgeColor}">
+                                        فصل الوظيفة ${idx + 1} • ${pset.type}
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-apple-orange/15 text-apple-orange">
+                                        +${pset.xp} XP
+                                    </span>
+                                    ${fullyDone ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-green/15 text-apple-green"><i class="fas fa-check-circle ml-1"></i>تم إنجاز وتسليم الوظيفة</span>` : ''}
+                                </div>
+                                <h4 class="text-xl font-black">${pset.name}</h4>
+                                <p class="text-xs text-apple-secondary leading-relaxed max-w-3xl">${pset.summary}</p>
+                            </div>
+
+                            <!-- Official Spec Link & Mark All Button -->
+                            <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+                                <a href="${pset.specUrl}" target="_blank" rel="noopener noreferrer"
+                                   class="px-4 py-2.5 rounded-2xl bg-apple-blue hover:bg-blue-600 text-white text-xs font-bold transition shadow-sm shadow-apple-blue/20 flex items-center gap-2">
+                                    <span>متطلبات الوظيفة في الموقع الرسمي</span>
+                                    <i class="fas fa-arrow-up-left-from-square text-[11px]"></i>
+                                </a>
+                                <button onclick="toggleFullPsetDone('${pset.id}')"
+                                        class="px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${
+                                            fullyDone
+                                                ? 'bg-apple-green text-white'
+                                                : 'bg-black/5 dark:bg-white/10 hover:bg-apple-green/20 hover:text-apple-green'
+                                        }">
+                                    <i class="fas fa-check-double ml-1"></i>
+                                    ${fullyDone ? 'مكتملة' : 'تحديد الوظيفة كمكتملة'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar for This Pset's Requirements -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold">قائمة التحقق من متطلبات الوظيفة (Specification Checklist)</span>
+                                <span class="font-mono font-bold text-apple-blue dark:text-apple-blueDark">${doneReqsCount}/${totalReqsCount} (${psetPercent}%)</span>
+                            </div>
+                            <div class="w-full h-2 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
+                                <div class="h-full rounded-full ${fullyDone ? 'bg-apple-green' : 'bg-apple-blue'} transition-all duration-500" style="width: ${psetPercent}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Sub-Requirements Interactive Checklist -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            ${reqsHtml}
+                        </div>
+
+                        <!-- Terminal Commands (check50 & submit50) + Personal Repo Solution Link -->
+                        <div class="pt-3 border-t border-gray-100 dark:border-white/10 grid grid-cols-1 lg:grid-cols-2 gap-3">
+                            <!-- check50 box -->
+                            <div class="p-3 rounded-2xl bg-apple-bgLight dark:bg-black/50 border border-black/5 dark:border-white/5 flex items-center justify-between gap-2">
+                                <div class="min-w-0">
+                                    <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">أمر الفحص الآلي (check50)</div>
+                                    <code class="text-xs font-mono text-apple-green block truncate" dir="ltr">${pset.checkCmd}</code>
+                                </div>
+                                <button onclick="copyCommandText('${pset.checkCmd.replace(/'/g, "\\'")}')"
+                                        class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card">
+                                    <i class="fas fa-copy ml-1"></i> نسخ
+                                </button>
+                            </div>
+
+                            <!-- submit50 box -->
+                            <div class="p-3 rounded-2xl bg-apple-bgLight dark:bg-black/50 border border-black/5 dark:border-white/5 flex items-center justify-between gap-2">
+                                <div class="min-w-0">
+                                    <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">أمر التسليم الرسمي (submit50)</div>
+                                    <code class="text-xs font-mono text-apple-blue dark:text-apple-blueDark block truncate" dir="ltr">${pset.submitCmd}</code>
+                                </div>
+                                <button onclick="copyCommandText('${pset.submitCmd.replace(/'/g, "\\'")}')"
+                                        class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card">
+                                    <i class="fas fa-copy ml-1"></i> نسخ
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Student Solution Link Input -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
+                            <span class="text-xs text-apple-secondary flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fab fa-github"></i> رابط حلك على GitHub أو ملاحظة التسليم:
+                            </span>
+                            <input type="text" value="${savedRepoLink}"
+                                   onchange="savePsetRepoLink('${pset.id}', this.value)"
+                                   placeholder="https://github.com/me50/USERNAME/tree/cs50/problems/2024/x/..."
+                                   class="flex-grow px-3 py-1.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark text-xs font-mono outline-none border border-transparent focus:border-apple-blue">
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // 5. INTERACTION HANDLERS
+        // ==========================================
+        window.toggleCheckpoint = function(cpId) {
+            if (appState.completedCheckpoints.includes(cpId)) {
+                appState.completedCheckpoints = appState.completedCheckpoints.filter(id => id !== cpId);
+            } else {
+                appState.completedCheckpoints.push(cpId);
+                showToast('تم إنجاز نقطة التفتيش وإضافة نقاط الخبرة! ⚡');
+            }
+            persistState();
+            renderAll();
+        };
+
+        window.completeAllCheckpointsInCurrentLevel = function() {
+            const level = CS50X_DATA[appState.activeWeek];
+            if (!level) return;
+            level.checkpoints.forEach(cp => {
+                if (!appState.completedCheckpoints.includes(cp.id)) {
+                    appState.completedCheckpoints.push(cp.id);
+                }
+            });
+            persistState();
+            renderAll();
+            showToast('تم إكمال جميع نقاط التفتيش لهذا المستوى! 🎉');
+        };
+
+        window.toggleRequirement = function(reqId, psetId) {
+            if (appState.completedReqs.includes(reqId)) {
+                appState.completedReqs = appState.completedReqs.filter(id => id !== reqId);
+                appState.completedPsets = appState.completedPsets.filter(id => id !== psetId);
+            } else {
+                appState.completedReqs.push(reqId);
+            }
+            persistState();
+            renderAll();
+        };
+
+        window.toggleFullPsetDone = function(psetId) {
+            const level = CS50X_DATA[appState.activeWeek];
+            const pset = level?.psets.find(p => p.id === psetId);
+            if (!pset) return;
+
+            const currentlyDone = isPsetCompleted(pset);
+            if (currentlyDone) {
+                appState.completedPsets = appState.completedPsets.filter(id => id !== psetId);
+                pset.requirements.forEach(r => {
+                    appState.completedReqs = appState.completedReqs.filter(id => id !== r.id);
+                });
+            } else {
+                if (!appState.completedPsets.includes(psetId)) appState.completedPsets.push(psetId);
+                pset.requirements.forEach(r => {
+                    if (!appState.completedReqs.includes(r.id)) appState.completedReqs.push(r.id);
+                });
+                showToast(`مبارك! تم تسجيل إنجاز وظيفة ${pset.name} بالكامل 🏆`);
+            }
+            persistState();
+            renderAll();
+        };
+
+        window.saveCustomVideoUrl = function() {
+            const val = document.getElementById('custom-youtube-input').value.trim();
+            appState.customVideoUrls[appState.activeWeek] = val;
+            persistState();
+            renderActiveLevelWorkspace();
+            showToast('تم تحديث فيديو المحاضرة لهذا المستوى 🎬');
+        };
+
+        window.resetCustomVideoUrl = function() {
+            delete appState.customVideoUrls[appState.activeWeek];
+            persistState();
+            renderActiveLevelWorkspace();
+            showToast('تمت استعادة المحاضرة الرسمية من قناة CS50');
+        };
+
+        window.savePsetRepoLink = function(psetId, url) {
+            appState.psetRepoLinks[psetId] = url.trim();
+            persistState();
+            showToast('تم حفظ رابط الحل للوظيفة 🔗');
+        };
+
+        window.handleNotesInput = function(text) {
+            appState.weekNotes[appState.activeWeek] = text;
+            persistState();
+        };
+
+        window.copyCommandText = function(cmdText) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = cmdText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('تم نسخ الأمر إلى الحافظة — جاهز للصق في cs50.dev 📋');
+        };
+
+        // Accounts Modal
+        window.openAccountsModal = function() {
+            const ghInput = document.getElementById('modal-github-input');
+            if (ghInput) ghInput.value = (appState.githubUsername || '').replace(/^@/, '');
+            document.getElementById('modal-displayname-input').value = appState.displayName || '';
+            document.getElementById('modal-codespace-input').value = appState.codespaceUrl || 'https://cs50.dev/';
+            const weekSelect = document.getElementById('modal-current-week');
+            if (weekSelect) weekSelect.value = String(appState.activeWeek || 0);
+
+            const modal = document.getElementById('accounts-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeAccountsModal = function() {
+            const modal = document.getElementById('accounts-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveAccountsProfile = function() {
+            const ghInput = document.getElementById('modal-github-input');
+            if (ghInput) {
+                appState.githubUsername = ghInput.value.replace(/^@/, '').trim();
+            }
+            appState.displayName = document.getElementById('modal-displayname-input').value.trim();
+            appState.codespaceUrl = document.getElementById('modal-codespace-input').value.trim() || 'https://cs50.dev/';
+
+            const weekSelect = document.getElementById('modal-current-week');
+            if (weekSelect) {
+                const selectedWeek = parseInt(weekSelect.value, 10);
+                if (!isNaN(selectedWeek)) {
+                    autoCompletePreviousWeeksEssentials(selectedWeek);
+                    appState.activeWeek = selectedWeek;
+                }
+            }
+
+            persistState();
+            renderAll();
+            closeAccountsModal();
+            showToast('تم حفظ الإعدادات وتحديث تقدم الأسابيع السابقة تلقائياً ✨');
+        };
+
+        // ==========================================
+        // 6. FIRST-TIME ONBOARDING WIZARD HANDLERS
+        // ==========================================
+        window.openOnboardingModal = function(initialView = 'choice') {
+            const cleanUsername = (appState.githubUsername || '').replace(/^@/, '');
+
+            const existingGh = document.getElementById('onb-existing-github');
+            if (existingGh) existingGh.value = cleanUsername;
+
+            const existingName = document.getElementById('onb-existing-name');
+            if (existingName) existingName.value = appState.displayName || '';
+            
+            const weekInput = document.getElementById('onb-existing-week');
+            if (weekInput) weekInput.value = String(appState.activeWeek || 0);
+
+            const newGh = document.getElementById('onb-new-github');
+            if (newGh) newGh.value = cleanUsername;
+
+            const newName = document.getElementById('onb-new-name');
+            if (newName) newName.value = appState.displayName || '';
+
+            syncOnboardingStepCheckboxes();
+            switchOnboardingView(initialView);
+
+            const modal = document.getElementById('onboarding-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeOnboardingModal = function(markSeen = true) {
+            if (markSeen && !appState.onboardingCompleted) {
+                appState.onboardingCompleted = true;
+                persistState();
+            }
+            const modal = document.getElementById('onboarding-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.switchOnboardingView = function(viewName) {
+            const views = ['choice', 'existing', 'new'];
+            views.forEach(v => {
+                const el = document.getElementById(`onboarding-view-${v}`);
+                if (!el) return;
+                if (v === viewName) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+        };
+
+        function syncOnboardingStepCheckboxes() {
+            const steps = appState.onboardingStepsChecked || [];
+            ['step1', 'step2', 'step3', 'step4'].forEach((s, idx) => {
+                const cb = document.getElementById(`onb-step-${idx + 1}`);
+                if (cb) cb.checked = steps.includes(s);
+            });
+            const badge = document.getElementById('onb-new-progress-badge');
+            if (badge) badge.textContent = `${steps.length}/4 خطوات مكتملة`;
+        }
+
+        window.toggleNewStudentStep = function(stepKey) {
+            if (!Array.isArray(appState.onboardingStepsChecked)) {
+                appState.onboardingStepsChecked = [];
+            }
+            if (appState.onboardingStepsChecked.includes(stepKey)) {
+                appState.onboardingStepsChecked = appState.onboardingStepsChecked.filter(s => s !== stepKey);
+            } else {
+                appState.onboardingStepsChecked.push(stepKey);
+            }
+            syncOnboardingStepCheckboxes();
+            persistState();
+        };
+
+        window.completeExistingStudentOnboarding = function() {
+            const githubInput = document.getElementById('onb-existing-github');
+            const githubVal = githubInput ? githubInput.value.replace(/^@/, '').trim() : '';
+            
+            if (!githubVal) {
+                showToast('يرجى كتابة اسم المستخدم (Username) الخاص بك على GitHub.');
+                if (githubInput) githubInput.focus();
+                return;
+            }
+            
+            const nameInput = document.getElementById('onb-existing-name');
+            const nameVal = nameInput ? nameInput.value.trim() : '';
+            
+            const weekInput = document.getElementById('onb-existing-week');
+            const weekVal = weekInput ? parseInt(weekInput.value, 10) : 0;
+
+            if (nameVal) appState.displayName = nameVal;
+            appState.githubUsername = githubVal;
+            autoCompletePreviousWeeksEssentials(weekVal);
+            appState.activeWeek = weekVal;
+            appState.onboardingCompleted = true;
+
+            persistState();
+            renderAll();
+            closeOnboardingModal(false);
+            showToast(`أهلاً بك @${appState.githubUsername}! تم تحديد محاضرات ووظائف الأسابيع السابقة ونقلك للمستوى ${weekVal} 🚀`);
+        };
+
+        window.completeNewStudentOnboarding = function() {
+            const githubInput = document.getElementById('onb-new-github');
+            const githubVal = githubInput ? githubInput.value.replace(/^@/, '').trim() : '';
+            
+            if (!githubVal) {
+                showToast('يرجى كتابة اسم المستخدم (Username) الذي أنشأته على GitHub.');
+                if (githubInput) githubInput.focus();
+                return;
+            }
+
+            const nameInput = document.getElementById('onb-new-name');
+            const nameVal = nameInput ? nameInput.value.trim() : '';
+
+            if (nameVal) appState.displayName = nameVal;
+            appState.githubUsername = githubVal;
+            appState.activeWeek = 0;
+            appState.onboardingCompleted = true;
+
+            persistState();
+            renderAll();
+            closeOnboardingModal(false);
+            showToast('مبارك تسجيلك في CS50x! رحلتك تبدأ الآن من المستوى 0 🎉');
+        };
+
+        // Toast Helper
+        let toastTimeout = null;
+        function showToast(message) {
+            const toast = document.getElementById('apple-toast');
+            const text = document.getElementById('apple-toast-text');
+            if (!toast || !text) return;
+
+            text.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-3');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-3');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2600);
+        }
+
+        function renderAll() {
+            updateHeaderAndRings();
+            renderSidebarLevels();
+            renderActiveLevelWorkspace();
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            renderAll();
+            if (!appState.onboardingCompleted) {
+                openOnboardingModal('choice');
+            }
+            initFirebaseSync();
+        });
+    </script>
+</body>
+</html>
