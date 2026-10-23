@@ -1801,25 +1801,6 @@
         }, 500);
     }
 
-        function persistState() {
-            saveLocal();
-            clearTimeout(cloudSaveTimer);
-            cloudSaveTimer = setTimeout(async () => {
-                if (db && currentUserId) {
-                    try {
-                        const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'data', 'progress');
-                        await setDoc(docRef, appState);
-                        const syncText = document.getElementById('sync-text');
-                        if (syncText) {
-                            syncText.textContent = 'تم الحفظ ✓';
-                            setTimeout(() => { if (syncText) syncText.textContent = 'الحفظ التلقائي مفعّل'; }, 2000);
-                        }
-                    } catch (e) {
-                        console.warn("Cloud sync error:", e);
-                    }
-                }
-            }, 600);
-        }
 
         // ==========================================
         // 3. CALCULATIONS & GAMIFICATION HELPERS
