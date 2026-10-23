@@ -1697,56 +1697,49 @@
         let db = null, auth = null, currentUserId = null, cloudSaveTimer = null;
 
         async function initFirebaseSync() {
-            const syncText = document.getElementById('sync-text');
-            const syncDot = document.getElementById('sync-dot');
-            try {
-                const firebaseConfig = {
-            apiKey: "AIzaSyDKxlvGe9FC4Kfa9sL5UiZDWGm86TIVkjA",
-            authDomain: "cs50-tracker.firebaseapp.com",
-            projectId: "cs50-tracker",
-            storageBucket: "cs50-tracker.firebasestorage.app",
-            messagingSenderId: "902122591875",
-            appId: "1:902122591875:web:a293ae51944db34375edb6",
-            measurementId: "G-QFZ2KD15T3"
-        };
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
+        const syncText = document.getElementById('sync-text');
+        const syncDot = document.getElementById('sync-dot');
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDKxlvGe9FC4Kfa9sL5UiZDWGm86TIVkjA",
+                authDomain: "cs50-tracker.firebaseapp.com",
+                projectId: "cs50-tracker",
+                storageBucket: "cs50-tracker.firebasestorage.app",
+                messagingSenderId: "902122591875",
+                appId: "1:902122591875:web:a293ae51944db34375edb6",
+                measurementId: "G-QFZ2KD15T3"
+            };
 
-        await signInAnonymously(auth);
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
 
-                    onAuthStateChanged(auth, async (user) => {
-                        if (user) {
-                            currentUserId = user.uid;
-                            if (syncText) syncText.textContent = 'الحفظ التلقائي مفعّل';
-                            if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
+            await signInAnonymously(auth);
 
-                            const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'data', 'progress');
-                            const snap = await getDoc(docRef);
-                            if (snap.exists()) {
-                                const cloudData = snap.data();
-                                appState = { ...appState, ...cloudData };
-                                saveLocal();
-                                applyTheme();
-                                renderAll();
-                                if (appState.onboardingCompleted) {
-                                    closeOnboardingModal(false);
-                                }
-                            } else {
-                                await setDoc(docRef, appState);
-                            }
-                        }
-                    });
-                } else {
-                    if (syncText) syncText.textContent = 'حفظ محلي تلقائي';
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    if (syncText) syncText.textContent = 'الحفظ التلقائي مفعّل';
                     if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
+
+                    const docRef = doc(db, 'artifacts', appId, 'users', currentUserId, 'data', 'progress');
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) {
+                        const cloudData = snap.data();
+                        appState = { ...appState, ...cloudData };
+                        saveLocal();
+                        applyTheme();
+                        renderLevels();
+                        updateActivityRings();
+                    }
                 }
-            } catch (e) {
-                console.warn("Running in local persistence mode:", e);
-                if (syncText) syncText.textContent = 'حفظ محلي تلقائي';
-                if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
-            }
+            });
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            if (syncText) syncText.textContent = 'خطأ في الاتصال';
+            if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-red-500';
         }
+    }
 
         function saveLocal() {
             try {
