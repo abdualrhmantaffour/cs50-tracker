@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS50x Studio — منصة التتبع التعليمي</title>
+    <title>CS50x Tracker — منصة التتبع التعليمي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script>
@@ -157,15 +157,17 @@
         <!-- استيراد خط SF Pro البديل المخصص للويب -->
         <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/sf-pro-display">
 
-        <style>
-          /* تطبيق خط أبل للنصوص الإنجليزية والعربية على كامل الموقع */
-          body, html, button, input, select, textarea {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Arabic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            letter-spacing: -0.015em;
-          }
-        </style>
+    <style>
+      /* تطبيق خط أبل على كافة عناصر الموقع بلا استثناء */
+      * {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Arabic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+      }
+      
+      body, html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        letter-spacing: -0.015em;
+      }
     </style>
 </head>
 <body class="bg-apple-bgLight dark:bg-apple-bgDark text-apple-textLight dark:text-apple-textDark min-h-screen flex flex-col selection:bg-apple-blue selection:text-white">
@@ -180,7 +182,7 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-lg font-extrabold tracking-tight">CS50x Studio</h1>
+                        <h1 class="text-lg font-extrabold tracking-tight">CS50x Tracker</h1>
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue dark:bg-apple-blueDark/20 dark:text-apple-blueDark">
                             OpenCourseWare
                         </span>
@@ -729,7 +731,7 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-lg font-black">مرحباً بك في CS50x Studio</h3>
+                            <h3 class="text-lg font-black">مرحباً بك في CS50x Tracker</h3>
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-apple-green/15 text-apple-green">مباشر عبر هارفارد • بدون edX</span>
                         </div>
                         <p class="text-xs text-apple-secondary">معالج الإعداد الذكي لتخصيص مسارك التعليمي</p>
