@@ -153,6 +153,19 @@
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
         }
+    </style>  
+        <!-- استيراد خط SF Pro البديل المخصص للويب -->
+        <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/sf-pro-display">
+
+        <style>
+          /* تطبيق خط أبل للنصوص الإنجليزية والعربية على كامل الموقع */
+          body, html, button, input, select, textarea {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Arabic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.015em;
+          }
+        </style>
     </style>
 </head>
 <body class="bg-apple-bgLight dark:bg-apple-bgDark text-apple-textLight dark:text-apple-textDark min-h-screen flex flex-col selection:bg-apple-blue selection:text-white">
