@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS50x Tracker — منصة التتبع التعليمي</title>
+    
+    <!-- 1. استدعاء خط IBM Plex Sans Arabic السريع من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -31,7 +38,8 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['"SF Arabic"', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"SF Pro Arabic"', 'sans-serif'],
+                        // 2. تعيين الخط كافتراضي في إعدادات Tailwind
+                        sans: ['"IBM Plex Sans Arabic"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
                         mono: ['SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
                     }
                 }
@@ -39,31 +47,6 @@
         }
     </script>
     <style>
-        /* 1. استدعاء أوزان خط أبل العربي SF Arabic الأصلي عبر الإنترنت */
-        @font-face {
-            font-family: 'SF Arabic';
-            src: url('https://cdn.jsdelivr.net/gh/bikashxsharma/sf-arabic-webfont@master/fonts/SF-Arabic-Regular.woff2') format('woff2');
-            font-weight: 400;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'SF Arabic';
-            src: url('https://cdn.jsdelivr.net/gh/bikashxsharma/sf-arabic-webfont@master/fonts/SF-Arabic-Medium.woff2') format('woff2');
-            font-weight: 500;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: 'SF Arabic';
-            src: url('https://cdn.jsdelivr.net/gh/bikashxsharma/sf-arabic-webfont@master/fonts/SF-Arabic-Bold.woff2') format('woff2');
-            font-weight: 700;
-            font-style: normal;
-            font-display: swap;
-        }
-
         :root {
             --glass-bg: rgba(255, 255, 255, 0.78);
             --glass-border: rgba(0, 0, 0, 0.08);
@@ -76,19 +59,19 @@
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
         }
 
-        /* 2. تطبيق خط أبل على كامل عناصر الموقع ونصوصه */
+        /* 3. تطبيق الخط على كامل عناصر الموقع ونصوصه */
         body, html, p, h1, h2, h3, h4, h5, h6, a, span, button, input, textarea, select, div {
-            font-family: "SF Arabic", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif !important;
+            font-family: "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, sans-serif !important;
         }
 
         body {
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.01em;
             transition: background-color 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), color 0.3s ease;
         }
 
-        /* 3. استثناء الأيقونات بدقة لمنع تحولها إلى خطوط أو رموز تالفة */
+        /* 4. استثناء الأيقونات بدقة لمنع تحولها إلى خطوط أو رموز تالفة */
         i, svg, [class*="fa-"], [class*="icon"], .fa, .fas, .far, .fab {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "FontAwesome", sans-serif !important;
         }
