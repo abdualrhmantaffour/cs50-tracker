@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="light">
+<html lang="en" dir="ltr" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -254,6 +254,10 @@
                     <img id="header-avatar" src="" alt="Avatar" class="w-5 h-5 rounded-full hidden border border-white/20" onerror="this.classList.add('hidden'); document.getElementById('header-icon').classList.remove('hidden');">
                     <i id="header-icon" class="fab fa-github text-sm"></i>
                     <span id="header-github-label" class="hidden md:inline">حساباتي ومنصات CS50</span>
+                </button>
+
+                <button onclick="toggleLanguage()" id="langToggleBtn" class="px-3 py-1.5 text-xs font-bold rounded-full bg-apple-blue/10 text-apple-blue hover:bg-apple-blue hover:text-white transition">
+                    العربية
                 </button>
 
                 <!-- Theme Toggle -->
@@ -1691,6 +1695,7 @@
 
         let appState = {
             theme: 'light',
+            lang: 'en',
             activeWeek: 0,
             activeTab: 'lecture',
             strictLockMode: false,
@@ -2655,7 +2660,54 @@
             renderActiveLevelWorkspace();
         }
 
-        // Initialize on load
+        // 1. تعريف القاموس والدوال أولاً
+        const UI_TRANSLATIONS = {
+            en: {
+                tabLecture: "Lecture & Files",
+                tabCheckpoints: "Checkpoints",
+                tabPsets: "Psets & Reqs",
+                tabNotes: "My Notes",
+                toggleBtn: "العربية"
+            },
+            ar: {
+                tabLecture: "المحاضرة والملفات",
+                tabCheckpoints: "نقاط التفتيش",
+                tabPsets: "الوظائف ومتطلباتها",
+                tabNotes: "ملاحظاتي وأكبر الأفكار",
+                toggleBtn: "English"
+            }
+        };
+
+        window.applyLanguage = function(lang) {
+            appState.lang = lang;
+            persistState();
+
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+            document.documentElement.lang = lang;
+
+            const btn = document.getElementById('langToggleBtn');
+            if (btn) btn.textContent = UI_TRANSLATIONS[lang].toggleBtn;
+
+            const t = UI_TRANSLATIONS[lang];
+            const updateText = (selector, text) => {
+                const el = document.querySelector(selector);
+                if (el) el.textContent = text;
+            };
+
+            updateText('#tab-btn-lecture span', t.tabLecture);
+            updateText('#tab-btn-checkpoints span:first-of-type', t.tabCheckpoints);
+            updateText('#tab-btn-psets span:first-of-type', t.tabPsets);
+            updateText('#tab-btn-notes span', t.tabNotes);
+
+            renderAll();
+        };
+
+        window.toggleLanguage = function() {
+            const nextLang = (appState.lang === 'en') ? 'ar' : 'en';
+            applyLanguage(nextLang);
+        };
+
+        // 2. استدعاؤها أخيراً عند تحميل الصفحة
         window.addEventListener('DOMContentLoaded', () => {
             applyTheme();
             renderAll();
@@ -2663,7 +2715,9 @@
                 openOnboardingModal('choice');
             }
             initFirebaseSync();
+            applyLanguage(appState.lang || 'en');
         });
+        
     </script>
 </body>
 </html>
