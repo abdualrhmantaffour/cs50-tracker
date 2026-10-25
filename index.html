@@ -2753,19 +2753,74 @@
 
             const t = UI_TRANSLATIONS[lang];
 
+            // 1. زر تبديل اللغة
             const btn = document.getElementById('langToggleBtn');
             if (btn) btn.textContent = t.toggleBtn;
 
-            const updateText = (selector, text) => {
+            // أداة مساعدة لتحديث النصوص عبر المحددات
+            const setTxt = (selector, text) => {
                 const el = document.querySelector(selector);
-                if (el && text) el.textContent = text;
+                if (el && text !== undefined) el.textContent = text;
             };
 
-            updateText('#tab-btn-lecture span', t.tabLecture);
-            updateText('#tab-btn-checkpoints span:first-of-type', t.tabCheckpoints);
-            updateText('#tab-btn-psets span:first-of-type', t.tabPsets);
-            updateText('#tab-btn-notes span', t.tabNotes);
+            // 2. الشريط العلوي (Header)
+            setTxt('header p.text-apple-secondary', t.siteSub);
+            const quickLinks = document.querySelectorAll('header .hidden.xl\\:flex a');
+            if (quickLinks.length >= 4) {
+                quickLinks[0].childNodes[quickLinks[0].childNodes.length - 1].textContent = ' ' + t.officialSite;
+                quickLinks[1].childNodes[quickLinks[1].childNodes.length - 1].textContent = ' ' + t.cs50dev;
+                quickLinks[2].childNodes[quickLinks[2].childNodes.length - 1].textContent = ' ' + t.gradebook;
+                quickLinks[3].childNodes[quickLinks[3].childNodes.length - 1].textContent = ' ' + t.submitPlatform;
+            }
+            setTxt('button[onclick*="openOnboardingModal"] span', t.onboardingBtn);
+            if (!appState.githubUsername) {
+                setTxt('#header-github-label', t.accountsBtn);
+            }
 
+            // 3. بطاقة حلقات الإنجاز (Achievements Card)
+            setTxt('aside h2', t.ringsTitle);
+            setTxt('aside h2 + p', t.ringsSub);
+            const asideLegends = document.querySelectorAll('aside .space-y-2 .flex-medium, aside .space-y-2 span.font-medium');
+            if (asideLegends.length >= 3) {
+                asideLegends[0].childNodes[asideLegends[0].childNodes.length - 1].textContent = ' ' + t.cpLabel;
+                asideLegends[1].childNodes[asideLegends[1].childNodes.length - 1].textContent = ' ' + t.psetsLabel;
+                asideLegends[2].childNodes[asideLegends[2].childNodes.length - 1].textContent = ' ' + t.reqsLabel;
+            }
+            const lockLabel = document.querySelector('aside .mt-4 span.text-apple-secondary');
+            if (lockLabel) {
+                lockLabel.childNodes[lockLabel.childNodes.length - 1].textContent = ' ' + t.lockMode;
+            }
+
+            // 4. خريطة المستويات (Levels Sidebar)
+            setTxt('aside h3', t.levelsMap);
+            const levelsCountEl = document.querySelector('aside h3 + span');
+            if (levelsCountEl) levelsCountEl.textContent = t.levelsCount;
+
+            // 5. بطاقة المستوى الحالية (Hero Card)
+            const progLabel = document.querySelector('#level-hero-card .text-xs.text-apple-secondary.mb-1');
+            if (progLabel) progLabel.textContent = t.currentLevelProg;
+            setTxt('#active-level-official-link span', t.harvardWeekPage);
+
+            // 6. أزرار التبويبات الأربعة (Tabs)
+            setTxt('#tab-btn-lecture span', t.tabLecture);
+            setTxt('#tab-btn-checkpoints span:first-of-type', t.tabCheckpoints);
+            setTxt('#tab-btn-psets span:first-of-type', t.tabPsets);
+            setTxt('#tab-btn-notes span', t.tabNotes);
+
+            // 7. محتوى تبويب المحاضرة والموارد
+            setTxt('#video-section-title', (lang === 'ar') ? 'المحاضرة الرسمية (البث المباشر داخل المنصة)' : 'Official Lecture Video');
+            setTxt('#video-section-title + p', (lang === 'ar') ? 'تقديم البروفيسور David J. Malan — جامعة هارفارد' : 'Prof. David J. Malan — Harvard University');
+            setTxt('#youtube-external-btn', (lang === 'ar') ? ' فتح في يوتيوب' : ' Open in YouTube');
+            
+            const resHeader = document.querySelector('#official-resources-list')?.previousElementSibling;
+            if (resHeader) {
+                const h3 = resHeader.querySelector('h3');
+                const p = resHeader.querySelector('p');
+                if (h3) h3.textContent = (lang === 'ar') ? 'موارد الأسبوع من موقع هارفارد' : 'Harvard Week Resources';
+                if (p) p.textContent = (lang === 'ar') ? 'روابط مباشرة للملاحظات والأكواد والشرائح' : 'Direct links to notes, code, and slides';
+            }
+
+            // 8. تحديث أسماء المستويات داخل المصفوفة
             if (Array.isArray(CS50X_DATA)) {
                 CS50X_DATA.forEach((lvl, i) => {
                     if (WEEK_TITLES[lang] && WEEK_TITLES[lang][i]) {
@@ -2774,7 +2829,10 @@
                 });
             }
 
-            renderAll();
+            // إعادة رسم الواجهات النشطة
+            renderSidebarLevels();
+            renderActiveLevelWorkspace();
+            updateHeaderAndRings();
         };
 
         window.toggleLanguage = function() {
