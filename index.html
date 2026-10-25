@@ -1744,7 +1744,6 @@
         return ghUser || currentUserId;
     }
 
-    // دالة المراقبة اللحظية: تجلب التعديلات فور حدوثها على أي جهاز آخر
     function setupRealtimeSync() {
         const syncId = getSyncId();
         if (!db || !syncId) return;
@@ -1758,7 +1757,6 @@
         unsubscribeSnapshot = onSnapshot(docRef, (snap) => {
             if (snap.exists()) {
                 const cloudData = snap.data();
-                // تحديث البيانات محلياً وفي الواجهة فور وصولها من السحابة
                 appState = { ...appState, ...cloudData };
                 saveLocal();
                 if (typeof applyTheme === 'function') applyTheme();
@@ -1766,7 +1764,8 @@
                 if (typeof updateActivityRings === 'function') updateActivityRings();
                 if (typeof renderCurrentLevel === 'function') renderCurrentLevel();
             }
-            if (syncText) syncText.textContent = 'متصل ومزامن (' + syncId + ')';
+            const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
+            if (syncText) syncText.textContent = `${t.syncConnected} (${syncId})`;
             if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-apple-green';
         });
     }
@@ -1799,7 +1798,8 @@
             });
         } catch (error) {
             console.error("Firebase Error:", error);
-            if (syncText) syncText.textContent = 'خطأ في الاتصال';
+            const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
+            if (syncText) syncText.textContent = t.syncError;
             if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-red-500';
         }
     }
@@ -1817,17 +1817,18 @@
             const syncId = getSyncId();
             if (db && syncId) {
                 const syncText = document.getElementById('sync-text');
+                const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
                 try {
-                    if (syncText) syncText.textContent = 'جاري الحفظ...';
+                    if (syncText) syncText.textContent = t.syncSaving;
                     const docRef = doc(db, 'artifacts', appId, 'users', syncId, 'data', 'progress');
                     await setDoc(docRef, appState, { merge: true });
-                    if (syncText) syncText.textContent = 'تم الحفظ (' + syncId + ')';
+                    if (syncText) syncText.textContent = `${t.syncSaved} (${syncId})`;
                     
-                    // إعادة تفعيل المراقب في حال قام المستخدم بتغيير اسم حسابه للتو
+                    // إعادة تفعيل المراقب
                     setupRealtimeSync();
                 } catch (e) {
                     console.error("Cloud save error:", e);
-                    if (syncText) syncText.textContent = 'خطأ في الحفظ';
+                    if (syncText) syncText.textContent = t.syncError;
                 }
             }
         }, 500);
