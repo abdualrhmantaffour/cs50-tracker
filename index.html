@@ -2660,22 +2660,88 @@
             renderActiveLevelWorkspace();
         }
 
-        // 1. تعريف القاموس والدوال أولاً
         const UI_TRANSLATIONS = {
             en: {
+                toggleBtn: "العربية",
+                siteTitle: "CS50x Tracker",
+                siteSub: "Harvard University Computer Science Course — Interactive Level System",
+                officialSite: "CS50x Official Site",
+                cs50dev: "cs50.dev Workspace",
+                gradebook: "cs50.me Gradebook",
+                submitPlatform: "Submit Platform",
+                onboardingBtn: "Registration Guide",
+                accountsBtn: "My Accounts",
+                ringsTitle: "Achievement Rings",
+                ringsSub: "Overall CS50x Progress",
+                cpLabel: "Checkpoints",
+                psetsLabel: "Problem Sets (Psets)",
+                reqsLabel: "Code Requirements",
+                lockMode: "Sequential Level Lock",
+                levelsMap: "Levels Map (Weeks)",
+                levelsCount: "11 levels",
+                currentLevelProg: "Current Level Progress",
+                harvardWeekPage: "Harvard Week Page",
+                markAllDone: "Mark All as Done",
                 tabLecture: "Lecture & Files",
                 tabCheckpoints: "Checkpoints",
-                tabPsets: "Psets & Reqs",
-                tabNotes: "My Notes",
-                toggleBtn: "العربية"
+                tabPsets: "Psets & Requirements",
+                tabNotes: "My Notes & Insights"
             },
             ar: {
+                toggleBtn: "English",
+                siteTitle: "CS50x Tracker",
+                siteSub: "مسار جامعة هارفارد لعلوم الحاسوب — نظام المستويات التفاعلي",
+                officialSite: "الموقع الرسمي CS50x",
+                cs50dev: "بيئة الأكواد cs50.dev",
+                gradebook: "سجل الدرجات cs50.me",
+                submitPlatform: "منصة التسليم Submit",
+                onboardingBtn: "دليل التسجيل والبداية",
+                accountsBtn: "حساباتي ومنصات CS50",
+                ringsTitle: "حلقات الإنجاز",
+                ringsSub: "تقدمك الكلي في CS50x",
+                cpLabel: "نقاط التفتيش",
+                psetsLabel: "الوظائف (Psets)",
+                reqsLabel: "متطلبات الكود",
+                lockMode: "نظام قفل المستويات المتسلسل",
+                levelsMap: "خريطة المستويات (الأسابيع)",
+                levelsCount: "11 مستوى",
+                currentLevelProg: "إنجاز المستوى الحالي",
+                harvardWeekPage: "صفحة الأسبوع في هارفارد",
+                markAllDone: "تحديد الكل كمكتمل",
                 tabLecture: "المحاضرة والملفات",
                 tabCheckpoints: "نقاط التفتيش",
                 tabPsets: "الوظائف ومتطلباتها",
-                tabNotes: "ملاحظاتي وأكبر الأفكار",
-                toggleBtn: "English"
+                tabNotes: "ملاحظاتي وأكبر الأفكار"
             }
+        };
+
+        const WEEK_TITLES = {
+            en: [
+                "Scratch — Computational Thinking",
+                "C — C Programming Language",
+                "Arrays — Arrays & Cryptography",
+                "Algorithms — Search & Sorting",
+                "Memory — Pointers & Files",
+                "Data Structures — Advanced Data Structures",
+                "Python — Modern Python",
+                "SQL — Relational Databases",
+                "HTML, CSS, JavaScript — Web Development",
+                "Flask — Back-End Web Applications",
+                "The End & Final Project — Capstone & Graduation"
+            ],
+            ar: [
+                "Scratch — التفكير الحاسوبي",
+                "C — لغة البرمجة سي",
+                "Arrays — المصفوفات والتشفير",
+                "Algorithms — الخوارزميات والبحث والترتيب",
+                "Memory — الذاكرة والمؤشرات والملفات",
+                "Data Structures — هياكل البيانات المتقدمة",
+                "Python — لغة بايثون الحديثة",
+                "SQL — قواعد البيانات العلائقية والتحقيق الجنائي",
+                "HTML, CSS, JavaScript — تطوير الويب",
+                "Flask — تطبيقات الويب الخلفية (Back-End)",
+                "The End & Final Project — التخرج والمشروع النهائي"
+            ]
         };
 
         window.applyLanguage = function(lang) {
@@ -2685,19 +2751,28 @@
             document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
             document.documentElement.lang = lang;
 
-            const btn = document.getElementById('langToggleBtn');
-            if (btn) btn.textContent = UI_TRANSLATIONS[lang].toggleBtn;
-
             const t = UI_TRANSLATIONS[lang];
+
+            const btn = document.getElementById('langToggleBtn');
+            if (btn) btn.textContent = t.toggleBtn;
+
             const updateText = (selector, text) => {
                 const el = document.querySelector(selector);
-                if (el) el.textContent = text;
+                if (el && text) el.textContent = text;
             };
 
             updateText('#tab-btn-lecture span', t.tabLecture);
             updateText('#tab-btn-checkpoints span:first-of-type', t.tabCheckpoints);
             updateText('#tab-btn-psets span:first-of-type', t.tabPsets);
             updateText('#tab-btn-notes span', t.tabNotes);
+
+            if (Array.isArray(CS50X_DATA)) {
+                CS50X_DATA.forEach((lvl, i) => {
+                    if (WEEK_TITLES[lang] && WEEK_TITLES[lang][i]) {
+                        lvl.title = WEEK_TITLES[lang][i];
+                    }
+                });
+            }
 
             renderAll();
         };
