@@ -1991,16 +1991,656 @@
             showToast(checked ? 'تم تفعيل قفل المستويات المتسلسل 🎮' : 'تم فتح كافة المستويات للتصفح الحر 🔓');
         };
 
+// ==========================================
+        // TRANSLATION DICTIONARIES (UI + FULL CURRICULUM)
+        // ==========================================
+        const UI_TRANSLATIONS = {
+            en: {
+                toggleBtn: "العربية",
+                siteTitle: "CS50x Tracker — Learning Platform",
+                siteSub: "Harvard University Computer Science Course — Interactive Level System",
+                officialSite: "CS50x Official Site",
+                cs50dev: "cs50.dev Workspace",
+                gradebook: "cs50.me Gradebook",
+                submitPlatform: "Submit Platform",
+                onboardingBtn: "Registration Guide",
+                accountsBtn: "My Accounts & CS50",
+                syncConnecting: "Connecting...",
+                syncConnected: "Synced",
+                syncSaving: "Saving...",
+                syncSaved: "Saved",
+                syncError: "Sync Error",
+                gradRank: "CS50x Graduate 🏆",
+                ringsTitle: "Achievement Rings",
+                ringsSub: "Your overall CS50x progress",
+                cpLabel: "Checkpoints",
+                psetsLabel: "Problem Sets (Psets)",
+                reqsLabel: "Code Requirements",
+                lockMode: "Sequential Level Lock",
+                levelsMap: "Levels Map (Weeks)",
+                levelsCount: "11 levels",
+                currentLevelProg: "Current Level Progress",
+                harvardWeekPage: "Harvard Week Page",
+                markAllDone: "Mark All as Done",
+                tabLecture: "Lecture & Files",
+                tabCheckpoints: "Checkpoints",
+                tabPsets: "Psets & Requirements",
+                tabNotes: "My Notes & Insights",
+                levelWord: "Level",
+                readyToStart: "Ready to start",
+                inProgress: "In Progress",
+                completed: "Completed ✓",
+                videoSectionTitle: "Official Lecture (Embedded Stream)",
+                videoSectionSub: "Presented by Prof. David J. Malan — Harvard University",
+                openYoutube: "Open in YouTube",
+                customVideoPrompt: "Following a specific translation or custom video for this week?",
+                customVideoPlaceholder: "Paste custom YouTube URL for this week...",
+                applyBtn: "Apply",
+                resHeaderTitle: "Harvard Week Resources",
+                resHeaderSub: "Direct links to notes, code, and slides",
+                nextStepTitle: "Next Practical Step",
+                nextStepDesc: "After watching the lecture, head to Psets & Requirements to view tasks and submission commands.",
+                nextStepBtn: "Explore Level Problem Sets →",
+                cpHeaderTitle: "Level Checkpoints",
+                cpHeaderDesc: "Follow the study steps recommended by Harvard's CS50 team before moving to the next level.",
+                openResource: "Open Resource ↗",
+                psetsHeaderTitle: "Official Problem Sets Specifications",
+                psetsHeaderDesc: "Each problem set below is broken down into its exact requirements from cs50.harvard.edu/x with check50 & submit50 commands ready to copy.",
+                openVsCode: "Open VS Code (cs50.dev)",
+                checkGrades: "Check Grades (cs50.me)",
+                psetChapter: "Pset Chapter",
+                mandatory: "Required",
+                completedAndSubmitted: "Completed & Submitted",
+                officialSpec: "Official Spec on CS50",
+                markPsetDone: "Mark as Completed",
+                psetDone: "Completed",
+                reqChecklist: "Specification Checklist",
+                checkCmd: "Automated Check (check50)",
+                submitCmd: "Official Submit (submit50)",
+                copyBtn: "Copy",
+                solutionLink: "Your GitHub Solution Link / Note:",
+                stepWord: "Step",
+                notesHeaderTitle: "Personal Level Notebook",
+                notesHeaderDesc: "Write down your summaries, rules, important code snippets, or insights learned this week",
+                notesAutoSave: "Auto-saved while typing",
+                notesPlaceholder: "Write your notes, lecture summary, or C / Python code snippets for this week here...",
+                accModalTitle: "My Accounts & CS50x Platforms",
+                accModalSub: "Enter your GitHub username to link your profile and course platforms",
+                accGhLabel: "GitHub Username",
+                accNameLabel: "Display Name (Optional)",
+                accNamePlaceholder: "Your name or nickname",
+                accCodeLabel: "Your Solutions Repo or Codespace URL (Optional)",
+                accWeekLabel: "Current Week (Level) you have reached",
+                accAutoCheckHint: "Lectures and Problem Sets for all previous weeks will be automatically marked (✓).",
+                accPortalsTitle: "Core CS50x Portals (No edX Needed)",
+                closeBtn: "Close",
+                saveSettingsBtn: "Save Settings"
+            },
+            ar: {
+                toggleBtn: "English",
+                siteTitle: "CS50x Tracker — منصة التتبع التعليمي",
+                siteSub: "مسار جامعة هارفارد لعلوم الحاسوب — نظام المستويات التفاعلي",
+                officialSite: "الموقع الرسمي CS50x",
+                cs50dev: "بيئة الأكواد cs50.dev",
+                gradebook: "سجل الدرجات cs50.me",
+                submitPlatform: "منصة التسليم Submit",
+                onboardingBtn: "دليل التسجيل والبداية",
+                accountsBtn: "حساباتي ومنصات CS50",
+                syncConnecting: "جاري الاتصال...",
+                syncConnected: "متصل ومزامن",
+                syncSaving: "جاري الحفظ...",
+                syncSaved: "تم الحفظ",
+                syncError: "خطأ في الاتصال",
+                gradRank: "خريج CS50x 🏆",
+                ringsTitle: "حلقات الإنجاز",
+                ringsSub: "تقدمك الكلي في CS50x",
+                cpLabel: "نقاط التفتيش",
+                psetsLabel: "الوظائف (Psets)",
+                reqsLabel: "متطلبات الكود",
+                lockMode: "نظام قفل المستويات المتسلسل",
+                levelsMap: "خريطة المستويات (الأسابيع)",
+                levelsCount: "11 مستوى",
+                currentLevelProg: "إنجاز المستوى الحالي",
+                harvardWeekPage: "صفحة الأسبوع في هارفارد",
+                markAllDone: "تحديد الكل كمكتمل",
+                tabLecture: "المحاضرة والملفات",
+                tabCheckpoints: "نقاط التفتيش",
+                tabPsets: "الوظائف ومتطلباتها",
+                tabNotes: "ملاحظاتي وأكبر الأفكار",
+                levelWord: "المستوى",
+                readyToStart: "جاهز للبدء",
+                inProgress: "قيد الدراسة والتنفيذ",
+                completed: "مكتمل بالكامل ✓",
+                videoSectionTitle: "المحاضرة الرسمية (البث المباشر داخل المنصة)",
+                videoSectionSub: "تقديم البروفيسور David J. Malan — جامعة هارفارد",
+                openYoutube: "فتح في يوتيوب",
+                customVideoPrompt: "هل تتابع ترجمة معينة أو فيديو آخر لهذا الأسبوع؟",
+                customVideoPlaceholder: "الصق رابط يوتيوب مخصص لهذا الأسبوع...",
+                applyBtn: "تطبيق",
+                resHeaderTitle: "موارد الأسبوع من موقع هارفارد",
+                resHeaderSub: "روابط مباشرة للملاحظات والأكواد والشرائح",
+                nextStepTitle: "الخطوة العملية التالية",
+                nextStepDesc: "بعد مشاهدة المحاضرة، انتقل إلى قسم الوظائف ومتطلباتها لاستعراض كل وظيفة مع قائمة شروطها وأوامر تسليمها.",
+                nextStepBtn: "استعراض وظائف هذا المستوى ←",
+                cpHeaderTitle: "نقاط التفتيش للمستوى (Level Checkpoints)",
+                cpHeaderDesc: "اتبع خطوات الدراسة المنهجية كما يوصي بها فريق CS50 في جامعة هارفارد قبل الانتقال للمستوى التالي.",
+                openResource: "فتح المورد ↗",
+                psetsHeaderTitle: "فصول الوظائف ومتطلباتها الرسمية (Problem Sets Specifications)",
+                psetsHeaderDesc: "كل وظيفة أدناه مقسمة إلى متطلباتها البرمجية الدقيقة المستوردة من موقع cs50.harvard.edu/x مع أوامر الفحص check50 والتسليم submit50 الجاهزة للنسخ.",
+                openVsCode: "فتح VS Code (cs50.dev)",
+                checkGrades: "التحقق من الدرجات (cs50.me)",
+                psetChapter: "فصل الوظيفة",
+                mandatory: "إلزامي",
+                completedAndSubmitted: "تم إنجاز وتسليم الوظيفة",
+                officialSpec: "متطلبات الوظيفة في الموقع الرسمي",
+                markPsetDone: "تحديد الوظيفة كمكتملة",
+                psetDone: "مكتملة",
+                reqChecklist: "قائمة التحقق من متطلبات الوظيفة (Specification Checklist)",
+                checkCmd: "أمر الفحص الآلي (check50)",
+                submitCmd: "أمر التسليم الرسمي (submit50)",
+                copyBtn: "نسخ",
+                solutionLink: "رابط حلك على GitHub أو ملاحظة التسليم:",
+                stepWord: "خطوة",
+                notesHeaderTitle: "دفتر ملاحظات المستوى",
+                notesHeaderDesc: "دوّن ملخصاتك، القوانين، الأكواد المهمة، أو الأفكار التي تعلمتها في هذا الأسبوع",
+                notesAutoSave: "يُحفظ تلقائياً أثناء الكتابة",
+                notesPlaceholder: "اكتب ملاحظاتك، ملخص المحاضرة، أو أكواد C / Python الخاصة بهذا الأسبوع هنا...",
+                accModalTitle: "حساباتي ومنصات CS50x",
+                accModalSub: "أدخل اسم حسابك في GitHub لربط ملفك ومنصات الدورة",
+                accGhLabel: "اسم المستخدم على GitHub (Username)",
+                accNameLabel: "الاسم المعروض في المنصة (اختياري)",
+                accNamePlaceholder: "اسمك أو لقبك البرمجي",
+                accCodeLabel: "رابط مستودع الحلول أو Codespace الخاص بك (اختياري)",
+                accWeekLabel: "الأسبوع (المستوى) الذي وصلت إليه حالياً",
+                accAutoCheckHint: "سيتم تلقائياً وضع علامة (✓) على المحاضرات والوظائف فقط لجميع الأسابيع السابقة.",
+                accPortalsTitle: "بوابات CS50x الأساسية (بدون الحاجة إلى edX)",
+                closeBtn: "إغلاق",
+                saveSettingsBtn: "حفظ الإعدادات"
+            }
+        };
+
+        // حفظ النسخة العربية الأصلية من البيانات لاستعادتها عند التبديل للعربية
+        const ORIGINAL_AR_DATA = JSON.parse(JSON.stringify(CS50X_DATA));
+
+        // النسخة الإنجليزية المقابلة لبيانات المنهج
+        const CURRICULUM_EN = [
+            {
+                title: "Scratch — Computational Thinking",
+                description: "The core introduction to computer science: how computers represent numbers, text, images, and sound in binary (0 and 1), how to design effective algorithms, and how to build an interactive project using MIT's Scratch.",
+                checkpoints: [
+                    { title: "Watch Week 0 Lecture (Scratch)", desc: "Understand data representation, algorithms, and programming fundamentals" },
+                    { title: "Review Lecture Notes & Slides", desc: "Read the official notes and explore Scratch examples" },
+                    { title: "Design & Submit Scratch Project (Problem Set 0)", desc: "Build an interactive game or story meeting all official specifications" }
+                ],
+                psets: [
+                    {
+                        name: "Scratch — Creative Scratch Project",
+                        type: "Required",
+                        summary: "Design an interactive project of your choice (game, interactive art, or animated story) on scratch.mit.edu and export the (.sb3) file for submission.",
+                        reqs: [
+                            "Use at least two sprites, at least one of which is not the default cat.",
+                            "Have at least 3 scripts in total.",
+                            "Use at least one conditional (if / if-else).",
+                            "Use at least one loop (repeat / forever).",
+                            "Use at least one variable to store a changing value like score or time.",
+                            "Create and use at least one custom block (My Blocks) taking at least one input.",
+                            "Download the project (.sb3), upload via submit.cs50.io, and pass check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "C — C Programming Language",
+                description: "Explore the classic C language and the Linux CLI inside VS Code (cs50.dev), learn how source code compiles into machine code, and handle mathematical limitations like Integer Overflow.",
+                checkpoints: [
+                    { title: "Watch Week 1 Lecture (C)", desc: "C fundamentals, functions, conditionals, and loops" },
+                    { title: "Browse Notes & Source Code", desc: "Test lecture code files inside cs50.dev" },
+                    { title: "Watch Shorts — Week 1", desc: "Data Types, Operators, Conditional Statements, Loops, Command Line" },
+                    { title: "Follow Section 1 Practice", desc: "Additional exercises on variables and loops in C" },
+                    { title: "Complete & Submit Problem Set 1", desc: "Finish Hello, Mario, and Cash/Credit" }
+                ],
+                psets: [
+                    {
+                        name: "Hello, It's Me — Greeting the User",
+                        type: "Required",
+                        summary: "Write your first C program that prompts the user for their name and prints hello, [name].",
+                        reqs: [
+                            "Create directory 'me' and file hello.c including <stdio.h> and <cs50.h>.",
+                            "Prompt the user for their name using get_string(\"What's your name? \").",
+                            "Print hello, followed by the name and a newline \\n accurately.",
+                            "Pass check50 and style50."
+                        ]
+                    },
+                    {
+                        name: "Mario (Less or More) — Super Mario Pyramids",
+                        type: "Choose one version (Less or More)",
+                        summary: "Print Mario's famous pyramids using # hashes and spaces in the terminal based on user-input height (1 to 8).",
+                        reqs: [
+                            "Prompt user for Height using a do-while loop with get_int.",
+                            "Reject any number less than 1 or greater than 8 and re-prompt immediately.",
+                            "Print leading spaces and hashes (#) accurately for each row using nested loops.",
+                            "(If choosing More): Add a 2-space gap then print the opposing right pyramid with no trailing spaces.",
+                            "Pass all check50 tests and submit."
+                        ]
+                    },
+                    {
+                        name: "Cash (Less) or Credit (More)",
+                        type: "Choose one version (Less or More)",
+                        summary: "In Cash: calculate the minimum number of coins (25¢, 10¢, 5¢, 1¢) for change using a Greedy Algorithm. In Credit: validate credit card numbers (AMEX, MASTERCARD, VISA) using Luhn's algorithm.",
+                        reqs: [
+                            "Read input from user and validate it (reject negative numbers in Cash).",
+                            "Implement the math operations (division/modulo % or Luhn's algorithm in Credit).",
+                            "Print the final output followed by a newline \\n per official specs.",
+                            "Pass check50 and style50 and submit."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Arrays — Arrays & Cryptography",
+                description: "Understand the 4 stages of compilation (Preprocessing, Compiling, Assembling, Linking), how arrays and strings are stored in RAM, command-line arguments (argc, argv), and practical cryptography.",
+                checkpoints: [
+                    { title: "Watch Week 2 Lecture (Arrays)", desc: "Arrays, strings, debug50, and cryptography" },
+                    { title: "Review Week 2 Notes & Source Code", desc: "Understand character arrays and argv handling" },
+                    { title: "Watch Shorts — Week 2", desc: "Functions, Variables & Scope, Arrays, Command-Line Arguments" },
+                    { title: "Follow Section 2 Practice", desc: "Exercises on arrays and strings" },
+                    { title: "Complete & Submit Problem Set 2", desc: "Scrabble, Readability, Caesar/Substitution" }
+                ],
+                psets: [
+                    {
+                        name: "Scrabble — Word Scoring Game",
+                        type: "Required",
+                        summary: "Write a program that computes the score of two words entered by two players based on Scrabble letter values and declares the winner.",
+                        reqs: [
+                            "Prompt Player 1 and Player 2 for words using get_string.",
+                            "Create a function to calculate letter scores case-insensitively (using toupper/tolower).",
+                            "Ignore punctuation and non-alphabetical characters (0 points).",
+                            "Compare scores, print the winner or Tie!, and pass check50."
+                        ]
+                    },
+                    {
+                        name: "Readability — Coleman-Liau Reading Grade",
+                        type: "Required",
+                        summary: "Analyze user text to count letters, words, and sentences, then apply the Coleman-Liau formula to determine the grade reading level.",
+                        reqs: [
+                            "Count alphabetical letters only using isalpha.",
+                            "Count words based on spaces.",
+                            "Count sentences based on (. or ! or ?).",
+                            "Apply index = 0.0588 * L - 0.296 * S - 15.8 and round to nearest integer via round().",
+                            "Print Before Grade 1, Grade X, or Grade 16+ and pass check50."
+                        ]
+                    },
+                    {
+                        name: "Caesar (Less) or Substitution (More)",
+                        type: "Choose one version (Less or More)",
+                        summary: "Build a cipher tool taking a key via command-line (argv[1]). Caesar shifts letters by k; Substitution maps each letter to a 26-letter key.",
+                        reqs: [
+                            "Verify argc == 2, otherwise print usage message and return 1.",
+                            "Validate key in argv[1] (digits only in Caesar, or 26 unique letters in Substitution).",
+                            "Preserve letter case (uppercase/lowercase) and leave non-letters unchanged.",
+                            "Print ciphertext: followed by encrypted text and pass check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Algorithms — Search & Sorting",
+                description: "Measure algorithm efficiency mathematically using Big O Notation, build custom data structures via struct, compare sorting algorithms, and use Recursion to solve complex problems.",
+                checkpoints: [
+                    { title: "Watch Week 3 Lecture (Algorithms)", desc: "Searching, sorting, Big O, and Recursion" },
+                    { title: "Review Week 3 Notes & Source Code", desc: "Study Binary Search and Merge Sort examples" },
+                    { title: "Watch Shorts — Week 3", desc: "Search Algorithms, Bubble/Selection/Merge Sort, Recursion" },
+                    { title: "Complete & Submit Problem Set 3", desc: "Sort, Plurality, Runoff / Tideman" }
+                ],
+                psets: [
+                    {
+                        name: "Sort — Analyzing Sorting Algorithms",
+                        type: "Required",
+                        summary: "Test three pre-compiled programs (sort1, sort2, sort3) on sorted, random, and reversed files using the 'time' command to identify Bubble Sort, Selection Sort, and Merge Sort.",
+                        reqs: [
+                            "Measure execution time of sort1, sort2, and sort3 on large files like random50000.txt and sorted50000.txt.",
+                            "Identify the fastest algorithm in all cases O(n log n) as Merge Sort.",
+                            "Distinguish between Bubble Sort Ω(n) on sorted data and Selection Sort Θ(n²).",
+                            "Fill in your explanation in answers.txt and pass check50."
+                        ]
+                    },
+                    {
+                        name: "Plurality — Simple Plurality Elections",
+                        type: "Required",
+                        summary: "Complete a program simulating a plurality election using an array of structs (struct candidate) to tally votes and print the winner(s).",
+                        reqs: [
+                            "Complete vote(string name) using strcmp to increment candidate votes and return true/false.",
+                            "Complete print_winner(void) to find the maximum vote count.",
+                            "Print the winning candidate's name (or all tied winners on separate lines).",
+                            "Pass check50 without modifying code outside the two functions."
+                        ]
+                    },
+                    {
+                        name: "Runoff (Less) or Tideman (More)",
+                        type: "Choose one version (Less or More)",
+                        summary: "Program a Ranked-Choice voting system. Runoff eliminates the lowest candidate and redistributes votes; Tideman locks graph edges without creating cycles.",
+                        reqs: [
+                            "Update preferences array based on each voter's ranked choices.",
+                            "In Runoff: implement tabulate, print_winner, find_min, is_tie, and eliminate.",
+                            "In Tideman: implement record_preferences, add_pairs, sort_pairs, and lock_pairs (with cycle check via Recursion).",
+                            "Pass all check50 tests successfully."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Memory — Pointers & Files",
+                description: "Dive under the hood: understand memory addresses (Pointers), how C strings work as char *, manual memory management via malloc & free with Valgrind, and processing audio and BMP images.",
+                checkpoints: [
+                    { title: "Watch Week 4 Lecture (Memory)", desc: "Pointers, memory management, and file I/O" },
+                    { title: "Review Week 4 Notes & Source Code", desc: "Understand Stack, Heap, and memory allocation" },
+                    { title: "Watch Shorts — Week 4", desc: "Hexadecimal, Pointers, Dynamic Memory Allocation, File Pointers" },
+                    { title: "Complete & Submit Problem Set 4", desc: "Volume, Filter, Recover" }
+                ],
+                psets: [
+                    {
+                        name: "Volume — Modifying WAV Audio Volume",
+                        type: "Required",
+                        summary: "Read a WAV audio file, copy its 44-byte header as-is, and multiply each 16-bit audio sample by a volume factor.",
+                        reqs: [
+                            "Read first 44 bytes (HEADER_SIZE) from input and write to output using fread and fwrite.",
+                            "Read audio samples one by one into an int16_t buffer.",
+                            "Multiply each sample by factor, write to output, and close files via fclose.",
+                            "Pass check50 and valgrind with zero memory leaks."
+                        ]
+                    },
+                    {
+                        name: "Filter (Less or More) — Digital Image Filters",
+                        type: "Choose one version (Less or More)",
+                        summary: "Program BMP image filters at the pixel level (RGBTRIPLE): Grayscale, Reflect, Blur, plus Sepia (Less) or Sobel Edges (More).",
+                        reqs: [
+                            "Implement grayscale by averaging Red, Green, and Blue and rounding via round().",
+                            "Implement reflect by swapping pixels horizontally in each row.",
+                            "Implement sepia (capped at 255) or edges (computing Sobel Gx and Gy kernels).",
+                            "Implement blur using a temporary image copy to average surrounding 3x3 pixels.",
+                            "Pass check50 across all four filters."
+                        ]
+                    },
+                    {
+                        name: "Recover — Digital Forensics & JPEG Recovery",
+                        type: "Required",
+                        summary: "Analyze a raw memory card image (card.raw) and recover 50 deleted JPEG photos by scanning 512-byte blocks for JPEG signatures.",
+                        reqs: [
+                            "Open card.raw and read 512-byte blocks using uint8_t buffer[512].",
+                            "Detect new JPEG headers via first 4 bytes: 0xff, 0xd8, 0xff and (buffer[3] & 0xf0) == 0xe0.",
+                            "Name recovered images sequentially 000.jpg to 049.jpg using sprintf.",
+                            "Close all files and free memory to pass valgrind and check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Data Structures — Advanced Data Structures",
+                description: "Build dynamic in-memory data structures combining pointers and structs, and design a lightning-fast spell-checker loading a full dictionary into a Hash Table.",
+                checkpoints: [
+                    { title: "Watch Week 5 Lecture (Data Structures)", desc: "Linked Lists, Trees, Hash Tables, and Tries" },
+                    { title: "Review Week 5 Notes & Source Code", desc: "Study node creation and pointer linking" },
+                    { title: "Watch Shorts — Week 5", desc: "Singly-Linked Lists, Hash Tables, Tries, Queues & Stacks" },
+                    { title: "Complete & Submit Problem Set 5", desc: "Inheritance & Speller" }
+                ],
+                psets: [
+                    {
+                        name: "Inheritance — Genetic Blood Type Simulation",
+                        type: "Required",
+                        summary: "Build a dynamic family tree using pointers and recursion to simulate blood type allele inheritance (A, B, O) across 3 generations, then free the tree.",
+                        reqs: [
+                            "Allocate memory for a new person using malloc(sizeof(person)) in create_family.",
+                            "Recursively call create_family to create parents and inherit random alleles.",
+                            "Set parent pointers to NULL and assign random alleles for the oldest generation (generations == 1).",
+                            "Complete free_family to free parents first then the person, passing valgrind and check50."
+                        ]
+                    },
+                    {
+                        name: "Speller — High-Speed Spell Checker (C Capstone)",
+                        type: "Required",
+                        summary: "Implement a Hash Table in dictionary.c to load 143,000+ words and spell-check large texts in fractions of a second with zero memory leaks.",
+                        reqs: [
+                            "Implement load to read dictionary words, allocate nodes, and insert into hash table.",
+                            "Develop a case-insensitive hash(const char *word) function.",
+                            "Implement size to return the total number of loaded words.",
+                            "Implement check to search the linked list using strcasecmp.",
+                            "Implement unload to free all nodes and pass valgrind and check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Python — Modern Python",
+                description: "Rediscover programming with high flexibility and speed in Python: see how Python condenses dozens of C lines into two, and use dicts and libraries to analyze DNA sequences.",
+                checkpoints: [
+                    { title: "Watch Week 6 Lecture (Python)", desc: "Python fundamentals compared to C" },
+                    { title: "Review Week 6 Notes & Source Code", desc: "Lists, dictionaries, and try/except exceptions" },
+                    { title: "Watch Shorts — Week 6", desc: "Python Basics, Lists, Tuples, Dictionaries" },
+                    { title: "Complete & Submit Problem Set 6", desc: "Sentimental (Hello, Mario, Cash/Credit, Readability) + DNA" }
+                ],
+                psets: [
+                    {
+                        name: "Sentimental (Hello + Mario + Cash/Credit + Readability)",
+                        type: "Required (Python Bundle)",
+                        summary: "Rewrite the classic programs you previously built in C (Hello, Mario, Cash/Credit, Readability) using Python.",
+                        reqs: [
+                            "Complete sentimental-hello: prompt name and print hello, {name} in Python.",
+                            "Complete sentimental-mario (less or more): print the pyramid using string multiplication in Python.",
+                            "Complete sentimental-cash or credit: calculate coins or validate cards in Python.",
+                            "Complete sentimental-readability: compute Coleman-Liau index in Python and pass check50."
+                        ]
+                    },
+                    {
+                        name: "DNA — Genetic Profiling & DNA Matching",
+                        type: "Required",
+                        summary: "Write a Python program that reads a CSV database of individuals and an unknown DNA sequence, computing the longest consecutive repeats of STRs to identify the person.",
+                        reqs: [
+                            "Verify command-line arguments len(sys.argv) == 3.",
+                            "Read the CSV database into memory using csv.DictReader.",
+                            "Read the DNA sequence file and compute longest STR repeats via longest_match.",
+                            "Compare counts against each person in the database, print their name or No match, and pass check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "SQL — Relational Databases & Forensics",
+                description: "Learn SQL to extract, analyze, and update large datasets rapidly, join tables via relationships, and solve the CS50 Duck theft mystery in Fiftyville using SQL alone!",
+                checkpoints: [
+                    { title: "Watch Week 7 Lecture (SQL)", desc: "Databases, relationships, indexes, and SQL Injection security" },
+                    { title: "Review Week 7 Notes & Source Code", desc: "Practice sqlite3 commands and nested queries" },
+                    { title: "Complete & Submit Problem Set 7", desc: "Songs, Movies, Fiftyville Mystery" }
+                ],
+                psets: [
+                    {
+                        name: "Songs — Spotify Data Analysis with SQL",
+                        type: "Required",
+                        summary: "Write 8 SQL queries on a database of the top 100 Spotify songs to analyze tempo, energy, and Audio Aura.",
+                        reqs: [
+                            "Write queries 1.sql through 8.sql using SELECT, WHERE, ORDER BY, and AVG.",
+                            "Join with the artists table to extract songs by specific artists.",
+                            "Answer the analysis prompt in answers.txt and pass check50."
+                        ]
+                    },
+                    {
+                        name: "Movies — IMDb Database Queries",
+                        type: "Required",
+                        summary: "Write 13 progressively challenging SQL queries on the IMDb database linking movies, actors, directors, and ratings.",
+                        reqs: [
+                            "Complete basic queries (1.sql to 6.sql) for filtering, ordering, and aggregation.",
+                            "Complete multi-table JOIN queries (7.sql to 11.sql) across movies, ratings, stars, and people.",
+                            "Complete advanced queries 12.sql and 13.sql (shared movies & Kevin Bacon co-stars) and pass check50."
+                        ]
+                    },
+                    {
+                        name: "Fiftyville — Detective Mystery in SQL",
+                        type: "Required (Fan Favorite)",
+                        summary: "Play detective: the CS50 Duck was stolen on July 28 on Humphrey Street! Query crime reports, bakery logs, ATM transactions, phone calls, and flights to catch the thief, destination city, and accomplice.",
+                        reqs: [
+                            "Query crime_scene_reports and interviews to read the three witnesses' transcripts.",
+                            "Cross-reference bakery_security_logs, atm_transactions, and phone_calls.",
+                            "Check flights and passengers to find the earliest flight the next morning and the suspect.",
+                            "Document queries in log.sql, fill in the 3 names in answers.txt, and pass check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "HTML, CSS, JavaScript — Web Development",
+                description: "Understand how the internet and networks work under the hood, and build interactive front-end web pages running in the browser using HTML, CSS, Bootstrap, and JavaScript.",
+                checkpoints: [
+                    { title: "Watch Week 8 Lecture (HTML, CSS, JS)", desc: "Networks, page structure, styling, and DOM manipulation" },
+                    { title: "Review Week 8 Notes & Source Code", desc: "HTML, CSS, and interactive JS event examples" },
+                    { title: "Watch Shorts — Week 8", desc: "Internet Primer, IP, TCP, HTTP, HTML, CSS, JavaScript, DOM" },
+                    { title: "Complete & Submit Problem Set 8", desc: "Trivia & Homepage" }
+                ],
+                psets: [
+                    {
+                        name: "Trivia — Interactive Quiz Webpage with JS",
+                        type: "Required",
+                        summary: "Design an interactive quiz page featuring a multiple-choice question and a free-response question that react immediately via JavaScript DOM Events.",
+                        reqs: [
+                            "Create a multiple-choice question (Part 1) with at least 3 answer buttons.",
+                            "Turn button green with 'Correct!' on right answer, and red with 'Incorrect' on wrong answer.",
+                            "Create a free-response question (Part 2) with an input field and check button.",
+                            "Submit via submit50."
+                        ]
+                    },
+                    {
+                        name: "Homepage — Build Your Personal Website",
+                        type: "Required",
+                        summary: "Design and build a multi-page personal website about yourself or your interests using HTML, CSS, Bootstrap, and JavaScript.",
+                        reqs: [
+                            "Create at least 4 distinct HTML pages (including index.html) linked together.",
+                            "Use at least 10 distinct HTML tags (besides html, head, body, title).",
+                            "Integrate Bootstrap and use at least one component.",
+                            "Write a custom styles.css with at least 5 CSS selectors and 5 properties.",
+                            "Add at least one interactive JavaScript feature and ensure mobile responsiveness."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Flask — Back-End Web Applications",
+                description: "Transition from static pages to full-stack dynamic web applications combining Python, SQL, and HTML/JS using the Flask framework to build a stock trading platform.",
+                checkpoints: [
+                    { title: "Watch Week 9 Lecture (Flask)", desc: "Server development, form handling, and sessions" },
+                    { title: "Review Week 9 Notes & Source Code", desc: "Study Flask project structure and Jinja templates" },
+                    { title: "Watch Shorts — Week 9", desc: "Flask, AJAX" },
+                    { title: "Complete & Submit Problem Set 9", desc: "Birthdays & C$50 Finance" }
+                ],
+                psets: [
+                    {
+                        name: "Birthdays — Birthday Tracker Web App",
+                        type: "Required",
+                        summary: "Build a Flask + SQLite web app that displays saved birthdays in a table and allows adding new birthdays via a POST form.",
+                        reqs: [
+                            "On GET: query all rows from birthdays table, pass to index.html, and render in a table.",
+                            "Add an HTML form in index.html for name, month, and day submitting via POST.",
+                            "On POST: validate input, insert into database via db.execute, and redirect to /."
+                        ]
+                    },
+                    {
+                        name: "C$50 Finance — Full Stock Trading Platform",
+                        type: "Required (Full-Stack Project)",
+                        summary: "Develop a complete financial web platform allowing users to register hashed accounts, look up real-time stock quotes, buy and sell shares, and view transaction history.",
+                        reqs: [
+                            "Complete /register route to register users and hash passwords via generate_password_hash.",
+                            "Complete /quote route to look up real stock prices using lookup().",
+                            "Complete /buy route and create a SQLite transactions table, deducting user cash.",
+                            "Complete index / route to display owned stocks, current value, and total balance.",
+                            "Complete /sell and /history routes plus your Personal Touch and pass check50."
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "The End & Final Project — Capstone & Graduation",
+                description: "The grand finale of CS50x! Combine everything you've learned to build a complete software project of your choice (web app, mobile app, CLI tool, game, or browser extension) and earn your Harvard CS50x certificate.",
+                checkpoints: [
+                    { title: "Watch Final Lecture (Week 10)", desc: "Cybersecurity, AI, and the future of your CS journey" },
+                    { title: "Choose Final Project Idea & Architecture", desc: "Define technologies, languages, and database schema" },
+                    { title: "Code & Test Final Project Completely", desc: "Write source code and structure project files" },
+                    { title: "Write README.md, Record Video & Submit", desc: "Claim your official CS50x Certificate from cs50.me/cs50x" }
+                ],
+                psets: [
+                    {
+                        name: "CS50x Final Project — Capstone Project",
+                        type: "Graduation",
+                        summary: "The pinnacle of your CS50x journey: build a real software project solving an actual problem using any language/stack, accompanied by a comprehensive README and a short demo video.",
+                        reqs: [
+                            "Develop a complete software project exceeding weekly problem sets in scope.",
+                            "Write a comprehensive README.md (at least 500 words) explaining your project, files, and design choices.",
+                            "Record a short demo video (up to 3 minutes) showcasing your project and upload to YouTube.",
+                            "Pass check50 for README.md validation and submit via submit50.",
+                            "Open cs50.me/cs50x and claim your official Harvard CS50x Certificate!"
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        function localizeCurriculumData(lang) {
+            if (!Array.isArray(CS50X_DATA)) return;
+            CS50X_DATA.forEach((lvl, idx) => {
+                if (lang === 'en' && CURRICULUM_EN[idx]) {
+                    const enLvl = CURRICULUM_EN[idx];
+                    lvl.title = enLvl.title;
+                    lvl.description = enLvl.description;
+                    lvl.checkpoints.forEach((cp, cIdx) => {
+                        if (enLvl.checkpoints[cIdx]) {
+                            cp.title = enLvl.checkpoints[cIdx].title;
+                            cp.desc = enLvl.checkpoints[cIdx].desc;
+                        }
+                    });
+                    lvl.psets.forEach((ps, pIdx) => {
+                        if (enLvl.psets[pIdx]) {
+                            ps.name = enLvl.psets[pIdx].name;
+                            ps.type = enLvl.psets[pIdx].type;
+                            ps.summary = enLvl.psets[pIdx].summary;
+                            ps.requirements.forEach((req, rIdx) => {
+                                if (enLvl.psets[pIdx].reqs[rIdx]) {
+                                    req.text = enLvl.psets[pIdx].reqs[rIdx];
+                                }
+                            });
+                        }
+                    });
+                } else if (ORIGINAL_AR_DATA[idx]) {
+                    const arLvl = ORIGINAL_AR_DATA[idx];
+                    lvl.title = arLvl.title;
+                    lvl.description = arLvl.description;
+                    lvl.checkpoints.forEach((cp, cIdx) => {
+                        if (arLvl.checkpoints[cIdx]) {
+                            cp.title = arLvl.checkpoints[cIdx].title;
+                            cp.desc = arLvl.checkpoints[cIdx].desc;
+                        }
+                    });
+                    lvl.psets.forEach((ps, pIdx) => {
+                        if (arLvl.psets[pIdx]) {
+                            ps.name = arLvl.psets[pIdx].name;
+                            ps.type = arLvl.psets[pIdx].type;
+                            ps.summary = arLvl.psets[pIdx].summary;
+                            ps.requirements.forEach((req, rIdx) => {
+                                if (arLvl.psets[pIdx].requirements[rIdx]) {
+                                    req.text = arLvl.psets[pIdx].requirements[rIdx].text;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
         function updateHeaderAndRings() {
             const metrics = calculateGlobalMetrics();
+            const lang = appState.lang || 'en';
+            const t = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS.en;
 
-            // Header XP & Rank
             document.getElementById('header-xp').textContent = `${metrics.totalXP} XP`;
             const rankLevel = Math.min(10, Math.floor(metrics.overallPercent / 10));
             document.getElementById('header-rank').textContent =
-                metrics.overallPercent === 100 ? 'خريج CS50x 🏆' : `المستوى ${rankLevel}`;
+                metrics.overallPercent === 100 ? t.gradRank : `${t.levelWord} ${rankLevel}`;
 
-            // Header GitHub label & Avatar based on typed username
             const ghLabel = document.getElementById('header-github-label');
             const headerAvatar = document.getElementById('header-avatar');
             const headerIcon = document.getElementById('header-icon');
@@ -2014,14 +2654,13 @@
                     headerIcon.classList.add('hidden');
                 }
             } else {
-                ghLabel.textContent = 'حساباتي ومنصات CS50';
+                ghLabel.textContent = t.accountsBtn;
                 if (headerAvatar && headerIcon) {
                     headerAvatar.classList.add('hidden');
                     headerIcon.classList.remove('hidden');
                 }
             }
 
-            // Activity Rings
             document.getElementById('overall-percentage-badge').textContent = `${metrics.overallPercent}%`;
             document.getElementById('stat-checkpoints').textContent = `${metrics.doneCheckpoints}/${metrics.totalCheckpoints}`;
             document.getElementById('stat-psets').textContent = `${metrics.donePsets}/${metrics.totalPsets}`;
@@ -2039,7 +2678,6 @@
             setRingOffset('ring-psets', 32, metrics.donePsets / metrics.totalPsets);
             setRingOffset('ring-reqs', 22, metrics.doneReqs / metrics.totalReqs);
 
-            // Strict lock checkbox state
             const lockToggle = document.getElementById('strict-lock-toggle');
             if (lockToggle) lockToggle.checked = !!appState.strictLockMode;
         }
@@ -2047,7 +2685,7 @@
         function renderSidebarLevels() {
             const container = document.getElementById('levels-nav-list');
             container.innerHTML = '';
-            const t = UI_TRANSLATIONS[appState.lang];
+            const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
 
             CS50X_DATA.forEach((level, idx) => {
                 const unlocked = isWeekUnlocked(idx);
@@ -2084,10 +2722,46 @@
             });
         }
 
+        window.selectLevel = function(weekIndex) {
+            if (!isWeekUnlocked(weekIndex)) {
+                showToast(appState.lang === 'ar'
+                    ? 'أكمل 75% على الأقل من المستوى السابق لفتح هذا المستوى، أو أوقف قفل المستويات المتسلسل.'
+                    : 'Complete at least 75% of the previous level to unlock this one, or disable Sequential Lock.');
+                return;
+            }
+            appState.activeWeek = weekIndex;
+            persistState();
+            renderSidebarLevels();
+            renderActiveLevelWorkspace();
+        };
+
+        window.switchTab = function(tabName) {
+            appState.activeTab = tabName;
+            persistState();
+            updateTabButtonsUI();
+        };
+
+        function updateTabButtonsUI() {
+            const tabs = ['lecture', 'checkpoints', 'psets', 'notes'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const sec = document.getElementById(`tab-content-${t}`);
+                if (!btn || !sec) return;
+
+                if (appState.activeTab === t) {
+                    btn.className = "tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-white dark:bg-apple-elevatedDark shadow-sm text-apple-textLight dark:text-white";
+                    sec.classList.remove('hidden');
+                } else {
+                    btn.className = "tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-apple-secondary hover:text-apple-textLight dark:hover:text-white";
+                    sec.classList.add('hidden');
+                }
+            });
+        }
+
         function renderActiveLevelWorkspace() {
             const level = CS50X_DATA[appState.activeWeek] || CS50X_DATA[0];
             const progress = getWeekProgress(appState.activeWeek);
-            const t = UI_TRANSLATIONS[appState.lang];
+            const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
 
             document.getElementById('active-level-badge').textContent = `${t.levelWord} ${level.week} • Week ${level.week}`;
             const statusEl = document.getElementById('active-level-status');
@@ -2130,9 +2804,9 @@
             const w = level.week;
             const resources = [
                 { title: (appState.lang === 'ar') ? `صفحة الأسبوع ${w} الرسمية` : `Week ${w} Official Page`, sub: `cs50.harvard.edu/x/weeks/${w}/`, icon: 'fa-building-columns', color: 'blue', url: level.officialWeekUrl },
-                { title: (appState.lang === 'ar') ? `ملخص المحاضرة الشامل (Notes)` : `Comprehensive Notes`, sub: (appState.lang === 'ar') ? 'شرح مكتوب للأمثلة والأفكار' : 'Written explanations and code examples', icon: 'fa-book-open', color: 'green', url: w === 10 ? 'https://cs50.harvard.edu/x/weeks/10/' : `https://cs50.harvard.edu/x/notes/${w}/` },
-                { title: (appState.lang === 'ar') ? `الشرائح والأكواد (Source Code)` : `Slides & Source Code`, sub: (appState.lang === 'ar') ? 'ملفات الكود للمحاضرة' : 'Lecture source code files', icon: 'fa-file-code', color: 'purple', url: level.officialWeekUrl },
-                { title: (appState.lang === 'ar') ? `صفحة وظائف الأسبوع (Pset ${w})` : `Problem Set ${w} Page`, sub: (appState.lang === 'ar') ? 'المواصفات الرسمية الكاملة' : 'Official specifications', icon: 'fa-laptop-code', color: 'orange', url: w === 10 ? 'https://cs50.harvard.edu/x/project/' : `https://cs50.harvard.edu/x/psets/${w}/` }
+                { title: (appState.lang === 'ar') ? `ملخص المحاضرة الشامل (Notes)` : `Comprehensive Lecture ${w} Notes`, sub: (appState.lang === 'ar') ? 'شرح مكتوب للأمثلة والأفكار' : 'Written explanations and code examples', icon: 'fa-book-open', color: 'green', url: w === 10 ? 'https://cs50.harvard.edu/x/weeks/10/' : `https://cs50.harvard.edu/x/notes/${w}/` },
+                { title: (appState.lang === 'ar') ? `الشرائح والأكواد (Source Code)` : `Slides & Source Code`, sub: (appState.lang === 'ar') ? 'ملفات الكود للمحاضرة' : 'Code files written by David Malan in lecture', icon: 'fa-file-code', color: 'purple', url: level.officialWeekUrl },
+                { title: (appState.lang === 'ar') ? `صفحة وظائف الأسبوع (Pset ${w})` : `Problem Set ${w} Specifications`, sub: (appState.lang === 'ar') ? 'المواصفات الرسمية الكاملة' : 'Full official specifications on course website', icon: 'fa-laptop-code', color: 'orange', url: w === 10 ? 'https://cs50.harvard.edu/x/project/' : `https://cs50.harvard.edu/x/psets/${w}/` }
             ];
 
             resourcesList.innerHTML = resources.map(r => `
@@ -2157,7 +2831,7 @@
 
         function renderCheckpointsTab(level) {
             const container = document.getElementById('checkpoints-list-container');
-            const t = UI_TRANSLATIONS[appState.lang];
+            const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
             container.innerHTML = level.checkpoints.map((cp, index) => {
                 const checked = appState.completedCheckpoints.includes(cp.id);
                 return `
@@ -2174,6 +2848,10 @@
                         </label>
                         <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
                             <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-apple-orange/15 text-apple-orange">+${cp.xp} XP</span>
+                            <a href="${cp.url}" target="_blank" rel="noopener noreferrer"
+                               class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-blue hover:text-white text-xs font-bold transition apple-card">
+                                ${t.openResource}
+                            </a>
                         </div>
                     </div>
                 `;
@@ -2182,7 +2860,7 @@
 
         function renderPsetsTab(level) {
             const container = document.getElementById('psets-cards-container');
-            const t = UI_TRANSLATIONS[appState.lang];
+            const t = UI_TRANSLATIONS[appState.lang || 'en'] || UI_TRANSLATIONS.en;
             container.innerHTML = level.psets.map((pset, idx) => {
                 const doneReqsCount = pset.requirements.filter(r => appState.completedReqs.includes(r.id)).length;
                 const totalReqsCount = pset.requirements.length;
@@ -2206,10 +2884,10 @@
                             <div class="space-y-1.5 text-left html-[dir=rtl]:text-right">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-${pset.typeBadgeColor}/15 text-apple-${pset.typeBadgeColor}">
-                                        ${t.psetChapter} ${idx + 1} • ${t.mandatory}
+                                        ${t.psetChapter} ${idx + 1} • ${pset.type || t.mandatory}
                                     </span>
                                     <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-apple-orange/15 text-apple-orange">+${pset.xp} XP</span>
-                                    ${fullyDone ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-green/15 text-apple-green"><i class="fas fa-check-circle ml-1"></i>${t.completedAndSubmitted}</span>` : ''}
+                                    ${fullyDone ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-green/15 text-apple-green"><i class="fas fa-check-circle mx-1"></i>${t.completedAndSubmitted}</span>` : ''}
                                 </div>
                                 <h4 class="text-xl font-black">${pset.name}</h4>
                                 <p class="text-xs text-apple-secondary leading-relaxed max-w-3xl">${pset.summary}</p>
@@ -2220,7 +2898,7 @@
                                     <i class="fas fa-arrow-up-right-from-square html-[dir=rtl]:fa-arrow-up-left-from-square text-[11px]"></i>
                                 </a>
                                 <button onclick="toggleFullPsetDone('${pset.id}')" class="px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${fullyDone ? 'bg-apple-green text-white' : 'bg-black/5 dark:bg-white/10 hover:bg-apple-green/20 hover:text-apple-green'}">
-                                    <i class="fas fa-check-double ml-1"></i> ${fullyDone ? t.psetDone : t.markPsetDone}
+                                    <i class="fas fa-check-double mx-1"></i> ${fullyDone ? t.psetDone : t.markPsetDone}
                                 </button>
                             </div>
                         </div>
@@ -2240,14 +2918,14 @@
                                     <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">${t.checkCmd}</div>
                                     <code class="text-xs font-mono text-apple-green block truncate" dir="ltr">${pset.checkCmd}</code>
                                 </div>
-                                <button onclick="copyCommandText('${(pset.checkCmd || "").replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card"><i class="fas fa-copy ml-1"></i> ${t.copyBtn}</button>
+                                <button onclick="copyCommandText('${(pset.checkCmd || "").replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card"><i class="fas fa-copy mx-1"></i> ${t.copyBtn}</button>
                             </div>
                             <div class="p-3 rounded-2xl bg-apple-bgLight dark:bg-black/50 border border-black/5 dark:border-white/5 flex items-center justify-between gap-2">
                                 <div class="min-w-0">
                                     <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">${t.submitCmd}</div>
                                     <code class="text-xs font-mono text-apple-blue dark:text-apple-blueDark block truncate" dir="ltr">${pset.submitCmd}</code>
                                 </div>
-                                <button onclick="copyCommandText('${(pset.submitCmd || "").replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card"><i class="fas fa-copy ml-1"></i> ${t.copyBtn}</button>
+                                <button onclick="copyCommandText('${(pset.submitCmd || "").replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card"><i class="fas fa-copy mx-1"></i> ${t.copyBtn}</button>
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1 text-left html-[dir=rtl]:text-right">
@@ -2267,7 +2945,7 @@
                 appState.completedCheckpoints = appState.completedCheckpoints.filter(id => id !== cpId);
             } else {
                 appState.completedCheckpoints.push(cpId);
-                showToast('تم إنجاز نقطة التفتيش وإضافة نقاط الخبرة! ⚡');
+                showToast(appState.lang === 'ar' ? 'تم إنجاز نقطة التفتيش وإضافة نقاط الخبرة! ⚡' : 'Checkpoint completed & XP added! ⚡');
             }
             persistState();
             renderAll();
@@ -2283,7 +2961,7 @@
             });
             persistState();
             renderAll();
-            showToast('تم إكمال جميع نقاط التفتيش لهذا المستوى! 🎉');
+            showToast(appState.lang === 'ar' ? 'تم إكمال جميع نقاط التفتيش لهذا المستوى! 🎉' : 'All checkpoints for this level completed! 🎉');
         };
 
         window.toggleRequirement = function(reqId, psetId) {
@@ -2313,7 +2991,7 @@
                 pset.requirements.forEach(r => {
                     if (!appState.completedReqs.includes(r.id)) appState.completedReqs.push(r.id);
                 });
-                showToast(`مبارك! تم تسجيل إنجاز وظيفة ${pset.name} بالكامل 🏆`);
+                showToast(appState.lang === 'ar' ? `مبارك! تم تسجيل إنجاز وظيفة ${pset.name} بالكامل 🏆` : `Congrats! ${pset.name} marked as completed 🏆`);
             }
             persistState();
             renderAll();
@@ -2324,20 +3002,20 @@
             appState.customVideoUrls[appState.activeWeek] = val;
             persistState();
             renderActiveLevelWorkspace();
-            showToast('تم تحديث فيديو المحاضرة لهذا المستوى 🎬');
+            showToast(appState.lang === 'ar' ? 'تم تحديث فيديو المحاضرة لهذا المستوى 🎬' : 'Custom lecture video updated 🎬');
         };
 
         window.resetCustomVideoUrl = function() {
             delete appState.customVideoUrls[appState.activeWeek];
             persistState();
             renderActiveLevelWorkspace();
-            showToast('تمت استعادة المحاضرة الرسمية من قناة CS50');
+            showToast(appState.lang === 'ar' ? 'تمت استعادة المحاضرة الرسمية من قناة CS50' : 'Restored official CS50 lecture video');
         };
 
         window.savePsetRepoLink = function(psetId, url) {
             appState.psetRepoLinks[psetId] = url.trim();
             persistState();
-            showToast('تم حفظ رابط الحل للوظيفة 🔗');
+            showToast(appState.lang === 'ar' ? 'تم حفظ رابط الحل للوظيفة 🔗' : 'Solution link saved 🔗');
         };
 
         window.handleNotesInput = function(text) {
@@ -2352,7 +3030,7 @@
             tempInput.select();
             document.execCommand('copy');
             document.body.removeChild(tempInput);
-            showToast('تم نسخ الأمر إلى الحافظة — جاهز للصق في cs50.dev 📋');
+            showToast(appState.lang === 'ar' ? 'تم نسخ الأمر إلى الحافظة — جاهز للصق في cs50.dev 📋' : 'Command copied to clipboard — ready to paste in cs50.dev 📋');
         };
 
         // Accounts Modal
@@ -2395,7 +3073,7 @@
             persistState();
             renderAll();
             closeAccountsModal();
-            showToast('تم حفظ الإعدادات وتحديث تقدم الأسابيع السابقة تلقائياً ✨');
+            showToast(appState.lang === 'ar' ? 'تم حفظ الإعدادات وتحديث تقدم الأسابيع السابقة تلقائياً ✨' : 'Settings saved & previous weeks updated ✨');
         };
 
         // ==========================================
@@ -2457,7 +3135,7 @@
                 if (cb) cb.checked = steps.includes(s);
             });
             const badge = document.getElementById('onb-new-progress-badge');
-            if (badge) badge.textContent = `${steps.length}/4 خطوات مكتملة`;
+            if (badge) badge.textContent = appState.lang === 'ar' ? `${steps.length}/4 خطوات مكتملة` : `${steps.length}/4 steps completed`;
         }
 
         window.toggleNewStudentStep = function(stepKey) {
@@ -2478,7 +3156,7 @@
             const githubVal = githubInput ? githubInput.value.replace(/^@/, '').trim() : '';
             
             if (!githubVal) {
-                showToast('يرجى كتابة اسم المستخدم (Username) الخاص بك على GitHub.');
+                showToast(appState.lang === 'ar' ? 'يرجى كتابة اسم المستخدم (Username) الخاص بك على GitHub.' : 'Please enter your GitHub username.');
                 if (githubInput) githubInput.focus();
                 return;
             }
@@ -2498,7 +3176,7 @@
             persistState();
             renderAll();
             closeOnboardingModal(false);
-            showToast(`أهلاً بك @${appState.githubUsername}! تم تحديد محاضرات ووظائف الأسابيع السابقة ونقلك للمستوى ${weekVal} 🚀`);
+            showToast(appState.lang === 'ar' ? `أهلاً بك @${appState.githubUsername}! تم نقلك للمستوى ${weekVal} 🚀` : `Welcome @${appState.githubUsername}! Jumped to Level ${weekVal} 🚀`);
         };
 
         window.completeNewStudentOnboarding = function() {
@@ -2506,7 +3184,7 @@
             const githubVal = githubInput ? githubInput.value.replace(/^@/, '').trim() : '';
             
             if (!githubVal) {
-                showToast('يرجى كتابة اسم المستخدم (Username) الذي أنشأته على GitHub.');
+                showToast(appState.lang === 'ar' ? 'يرجى كتابة اسم المستخدم (Username) الذي أنشأته على GitHub.' : 'Please enter your GitHub username.');
                 if (githubInput) githubInput.focus();
                 return;
             }
@@ -2522,7 +3200,7 @@
             persistState();
             renderAll();
             closeOnboardingModal(false);
-            showToast('مبارك تسجيلك في CS50x! رحلتك تبدأ الآن من المستوى 0 🎉');
+            showToast(appState.lang === 'ar' ? 'مبارك تسجيلك في CS50x! رحلتك تبدأ الآن من المستوى 0 🎉' : 'Congrats! Your CS50x journey starts now at Level 0 🎉');
         };
 
         // Toast Helper
@@ -2549,139 +3227,15 @@
             renderActiveLevelWorkspace();
         }
 
-        const UI_TRANSLATIONS = {
-            en: {
-                toggleBtn: "العربية",
-                siteTitle: "CS50x Tracker",
-                siteSub: "Harvard University Computer Science Course — Interactive Level System",
-                officialSite: "CS50x Official Site",
-                cs50dev: "cs50.dev Workspace",
-                gradebook: "cs50.me Gradebook",
-                submitPlatform: "Submit Platform",
-                onboardingBtn: "Registration Guide",
-                accountsBtn: "My Accounts",
-                ringsTitle: "Achievement Rings",
-                ringsSub: "Overall CS50x Progress",
-                cpLabel: "Checkpoints",
-                psetsLabel: "Problem Sets (Psets)",
-                reqsLabel: "Code Requirements",
-                lockMode: "Sequential Level Lock",
-                levelsMap: "Levels Map (Weeks)",
-                levelsCount: "11 levels",
-                currentLevelProg: "Current Level Progress",
-                harvardWeekPage: "Harvard Week Page",
-                markAllDone: "Mark All as Done",
-                tabLecture: "Lecture & Files",
-                tabCheckpoints: "Checkpoints",
-                tabPsets: "Psets & Requirements",
-                tabNotes: "My Notes & Insights",
-                // واجهات لوحة العمل
-                levelWord: "Level",
-                readyToStart: "Ready to start",
-                inProgress: "In Progress",
-                completed: "Completed ✓",
-                psetsHeaderTitle: "Official Problem Sets Specifications",
-                psetsHeaderDesc: "Each problem set is broken down into its official requirements with check50/submit50 commands.",
-                openVsCode: "Open VS Code",
-                checkGrades: "Check Grades",
-                psetChapter: "Pset Chapter",
-                mandatory: "Required",
-                completedAndSubmitted: "Completed & Submitted",
-                officialSpec: "Official Spec on CS50",
-                markPsetDone: "Mark as Completed",
-                psetDone: "Completed",
-                reqChecklist: "Specification Checklist",
-                checkCmd: "check50 Command",
-                submitCmd: "submit50 Command",
-                copyBtn: "Copy",
-                solutionLink: "GitHub Solution Link / Note:",
-                stepWord: "Step"
-            },
-            ar: {
-                toggleBtn: "English",
-                siteTitle: "منصة التتبع CS50x",
-                siteSub: "مسار جامعة هارفارد لعلوم الحاسوب — نظام المستويات التفاعلي",
-                officialSite: "الموقع الرسمي CS50x",
-                cs50dev: "بيئة الأكواد cs50.dev",
-                gradebook: "سجل الدرجات cs50.me",
-                submitPlatform: "منصة التسليم Submit",
-                onboardingBtn: "دليل التسجيل والبداية",
-                accountsBtn: "حساباتي ومنصات CS50",
-                ringsTitle: "حلقات الإنجاز",
-                ringsSub: "تقدمك الكلي في CS50x",
-                cpLabel: "نقاط التفتيش",
-                psetsLabel: "الوظائف (Psets)",
-                reqsLabel: "متطلبات الكود",
-                lockMode: "نظام قفل المستويات المتسلسل",
-                levelsMap: "خريطة المستويات (الأسابيع)",
-                levelsCount: "11 مستوى",
-                currentLevelProg: "إنجاز المستوى الحالي",
-                harvardWeekPage: "صفحة الأسبوع في هارفارد",
-                markAllDone: "تحديد الكل كمكتمل",
-                tabLecture: "المحاضرة والملفات",
-                tabCheckpoints: "نقاط التفتيش",
-                tabPsets: "الوظائف ومتطلباتها",
-                tabNotes: "ملاحظاتي وأكبر الأفكار",
-                levelWord: "المستوى",
-                readyToStart: "جاهز للبدء",
-                inProgress: "قيد الدراسة والتنفيذ",
-                completed: "مكتمل بالكامل ✓",
-                psetsHeaderTitle: "فصول الوظائف ومتطلباتها الرسمية (Problem Sets Specifications)",
-                psetsHeaderDesc: "كل وظيفة أدناه مقسمة إلى متطلباتها البرمجية الدقيقة المستوردة من موقع هارفارد مع أوامر الفحص والتسليم الجاهزة للنسخ.",
-                openVsCode: "فتح VS Code",
-                checkGrades: "التحقق من الدرجات",
-                psetChapter: "فصل الوظيفة",
-                mandatory: "إلزامي",
-                completedAndSubmitted: "تم إنجاز وتسليم الوظيفة",
-                officialSpec: "متطلبات الوظيفة في الموقع الرسمي",
-                markPsetDone: "تحديد الوظيفة كمكتملة",
-                psetDone: "مكتملة",
-                reqChecklist: "قائمة التحقق من متطلبات الوظيفة",
-                checkCmd: "أمر الفحص الآلي (check50)",
-                submitCmd: "أمر التسليم الرسمي (submit50)",
-                copyBtn: "نسخ",
-                solutionLink: "رابط حلك على GitHub أو ملاحظة التسليم:",
-                stepWord: "خطوة"
-            }
-        };
-
-        const WEEK_TITLES = {
-            en: [
-                "Scratch — Computational Thinking",
-                "C — C Programming Language",
-                "Arrays — Arrays & Cryptography",
-                "Algorithms — Search & Sorting",
-                "Memory — Pointers & Files",
-                "Data Structures — Advanced Data Structures",
-                "Python — Modern Python",
-                "SQL — Relational Databases",
-                "HTML, CSS, JavaScript — Web Development",
-                "Flask — Back-End Web Applications",
-                "The End & Final Project — Capstone & Graduation"
-            ],
-            ar: [
-                "Scratch — التفكير الحاسوبي",
-                "C — لغة البرمجة سي",
-                "Arrays — المصفوفات والتشفير",
-                "Algorithms — الخوارزميات والبحث والترتيب",
-                "Memory — الذاكرة والمؤشرات والملفات",
-                "Data Structures — هياكل البيانات المتقدمة",
-                "Python — لغة بايثون الحديثة",
-                "SQL — قواعد البيانات العلائقية والتحقيق الجنائي",
-                "HTML, CSS, JavaScript — تطوير الويب",
-                "Flask — تطبيقات الويب الخلفية (Back-End)",
-                "The End & Final Project — التخرج والمشروع النهائي"
-            ]
-        };
-
         window.applyLanguage = function(lang) {
-            appState.lang = lang;
+            appState.lang = lang || 'en';
             persistState();
 
-            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-            document.documentElement.lang = lang;
+            document.documentElement.dir = (appState.lang === 'ar') ? 'rtl' : 'ltr';
+            document.documentElement.lang = appState.lang;
 
-            const t = UI_TRANSLATIONS[lang];
+            const t = UI_TRANSLATIONS[appState.lang] || UI_TRANSLATIONS.en;
+            document.title = t.siteTitle;
 
             const btn = document.getElementById('langToggleBtn');
             if (btn) btn.textContent = t.toggleBtn;
@@ -2691,34 +3245,51 @@
                 if (el && text !== undefined) el.textContent = text;
             };
 
+            const setLastTextNode = (el, text) => {
+                if (!el) return;
+                for (let i = el.childNodes.length - 1; i >= 0; i--) {
+                    if (el.childNodes[i].nodeType === Node.TEXT_NODE) {
+                        el.childNodes[i].textContent = ' ' + text;
+                        return;
+                    }
+                }
+            };
+
+            // 1. Header
             setTxt('header p.text-apple-secondary', t.siteSub);
             const quickLinks = document.querySelectorAll('header .hidden.xl\\:flex a');
             if (quickLinks.length >= 4) {
-                quickLinks[0].childNodes[quickLinks[0].childNodes.length - 1].textContent = ' ' + t.officialSite;
-                quickLinks[1].childNodes[quickLinks[1].childNodes.length - 1].textContent = ' ' + t.cs50dev;
-                quickLinks[2].childNodes[quickLinks[2].childNodes.length - 1].textContent = ' ' + t.gradebook;
-                quickLinks[3].childNodes[quickLinks[3].childNodes.length - 1].textContent = ' ' + t.submitPlatform;
+                setLastTextNode(quickLinks[0], t.officialSite);
+                setLastTextNode(quickLinks[1], t.cs50dev);
+                setLastTextNode(quickLinks[2], t.gradebook);
+                setLastTextNode(quickLinks[3], t.submitPlatform);
             }
             setTxt('button[onclick*="openOnboardingModal"] span', t.onboardingBtn);
             if (!appState.githubUsername) setTxt('#header-github-label', t.accountsBtn);
 
+            const syncTextEl = document.getElementById('sync-text');
+            if (syncTextEl) {
+                const syncId = getSyncId();
+                syncTextEl.textContent = db && syncId ? `${t.syncConnected} (${syncId})` : t.syncConnecting;
+            }
+
+            // 2. Sidebar Rings & Levels Map
             setTxt('aside h2', t.ringsTitle);
             setTxt('aside h2 + p', t.ringsSub);
             const asideLegends = document.querySelectorAll('aside .space-y-2 .font-medium');
             if (asideLegends.length >= 3) {
-                asideLegends[0].childNodes[asideLegends[0].childNodes.length - 1].textContent = ' ' + t.cpLabel;
-                asideLegends[1].childNodes[asideLegends[1].childNodes.length - 1].textContent = ' ' + t.psetsLabel;
-                asideLegends[2].childNodes[asideLegends[2].childNodes.length - 1].textContent = ' ' + t.reqsLabel;
+                setLastTextNode(asideLegends[0], t.cpLabel);
+                setLastTextNode(asideLegends[1], t.psetsLabel);
+                setLastTextNode(asideLegends[2], t.reqsLabel);
             }
             const lockLabel = document.querySelector('aside .mt-4 span.text-apple-secondary');
-            if (lockLabel) lockLabel.childNodes[lockLabel.childNodes.length - 1].textContent = ' ' + t.lockMode;
+            setLastTextNode(lockLabel, t.lockMode);
 
             setTxt('aside h3', t.levelsMap);
-            const levelsCountEl = document.querySelector('aside h3 + span');
-            if (levelsCountEl) levelsCountEl.textContent = t.levelsCount;
+            setTxt('aside h3 + span', t.levelsCount);
 
-            const progLabel = document.querySelector('#level-hero-card .text-xs.text-apple-secondary.mb-1');
-            if (progLabel) progLabel.textContent = t.currentLevelProg;
+            // 3. Hero Card & Segmented Tabs
+            setTxt('#level-hero-card .text-xs.text-apple-secondary.mb-1', t.currentLevelProg);
             setTxt('#active-level-official-link span', t.harvardWeekPage);
 
             setTxt('#tab-btn-lecture span', t.tabLecture);
@@ -2726,36 +3297,81 @@
             setTxt('#tab-btn-psets span:first-of-type', t.tabPsets);
             setTxt('#tab-btn-notes span', t.tabNotes);
 
-            setTxt('#video-section-title', (lang === 'ar') ? 'المحاضرة الرسمية (البث المباشر داخل المنصة)' : 'Official Lecture Video');
-            setTxt('#video-section-title + p', (lang === 'ar') ? 'تقديم البروفيسور David J. Malan — جامعة هارفارد' : 'Prof. David J. Malan — Harvard University');
-            setTxt('#youtube-external-btn', (lang === 'ar') ? ' فتح في يوتيوب' : ' Open in YouTube');
-            
-            const resHeader = document.querySelector('#official-resources-list')?.previousElementSibling;
-            if (resHeader) {
-                const h3 = resHeader.querySelector('h3');
-                const p = resHeader.querySelector('p');
-                if (h3) h3.textContent = (lang === 'ar') ? 'موارد الأسبوع من موقع هارفارد' : 'Harvard Week Resources';
-                if (p) p.textContent = (lang === 'ar') ? 'روابط مباشرة للملاحظات والأكواد والشرائح' : 'Direct links to notes, code, and slides';
+            // 4. Tab 1: Lecture & Resources
+            setTxt('#video-section-title', t.videoSectionTitle);
+            setTxt('#video-section-title + p', t.videoSectionSub);
+            setLastTextNode(document.getElementById('youtube-external-btn'), t.openYoutube);
+
+            const customBar = document.querySelector('#custom-youtube-input')?.closest('.pt-2');
+            if (customBar) {
+                setLastTextNode(customBar.querySelector('span.text-apple-secondary'), t.customVideoPrompt);
+                const input = document.getElementById('custom-youtube-input');
+                if (input) input.placeholder = t.customVideoPlaceholder;
+                setTxt('button[onclick="saveCustomVideoUrl()"]', t.applyBtn);
             }
 
-            // تحديث تبويب الوظائف
-            setTxt('#tab-content-psets h3 span', t.psetsHeaderTitle);
+            const resHeader = document.querySelector('#official-resources-list')?.previousElementSibling;
+            if (resHeader) {
+                setTxt('#official-resources-list', ''); // will be populated by renderAll
+                const h3 = resHeader.querySelector('h3');
+                const p = resHeader.querySelector('p');
+                if (h3) h3.textContent = t.resHeaderTitle;
+                if (p) p.textContent = t.resHeaderSub;
+            }
+
+            const nextStepBox = document.querySelector('#official-resources-list')?.parentElement?.nextElementSibling;
+            if (nextStepBox) {
+                const titleSpan = nextStepBox.querySelector('span');
+                const descP = nextStepBox.querySelector('p');
+                const btnEl = nextStepBox.querySelector('button');
+                if (titleSpan) titleSpan.textContent = t.nextStepTitle;
+                if (descP) descP.textContent = t.nextStepDesc;
+                if (btnEl) btnEl.textContent = t.nextStepBtn;
+            }
+
+            // 5. Tab 2: Checkpoints Header
+            const cpHeading = document.querySelector('#tab-content-checkpoints h3');
+            setLastTextNode(cpHeading, t.cpHeaderTitle);
+            setTxt('#tab-content-checkpoints h3 + p', t.cpHeaderDesc);
+            setLastTextNode(document.querySelector('button[onclick="completeAllCheckpointsInCurrentLevel()"]'), t.markAllDone);
+
+            // 6. Tab 3: Problem Sets Header
+            const psHeading = document.querySelector('#tab-content-psets h3');
+            setLastTextNode(psHeading, t.psetsHeaderTitle);
             setTxt('#tab-content-psets h3 + p', t.psetsHeaderDesc);
             const psetTabBtns = document.querySelectorAll('#tab-content-psets > div:first-child a');
             if (psetTabBtns.length >= 2) {
-                psetTabBtns[0].childNodes[psetTabBtns[0].childNodes.length - 1].textContent = ' ' + t.openVsCode;
-                psetTabBtns[1].childNodes[psetTabBtns[1].childNodes.length - 1].textContent = ' ' + t.checkGrades;
-            }
-            setTxt('#tab-content-checkpoints button span', t.markAllDone);
-
-            if (Array.isArray(CS50X_DATA)) {
-                CS50X_DATA.forEach((lvl, i) => {
-                    if (WEEK_TITLES[lang] && WEEK_TITLES[lang][i]) {
-                        lvl.title = WEEK_TITLES[lang][i];
-                    }
-                });
+                setLastTextNode(psetTabBtns[0], t.openVsCode);
+                setLastTextNode(psetTabBtns[1], t.checkGrades);
             }
 
+            // 7. Tab 4: Notes
+            setTxt('#tab-content-notes h3', t.notesHeaderTitle);
+            setTxt('#tab-content-notes h3 + p', t.notesHeaderDesc);
+            setTxt('#notes-save-indicator', t.notesAutoSave);
+            const notesArea = document.getElementById('level-notes-textarea');
+            if (notesArea) notesArea.placeholder = t.notesPlaceholder;
+
+            // 8. Accounts Modal
+            setTxt('#accounts-modal h3', t.accModalTitle);
+            setTxt('#accounts-modal h3 + p', t.accModalSub);
+            const accLabels = document.querySelectorAll('#accounts-modal label');
+            if (accLabels.length >= 4) {
+                accLabels[0].textContent = t.accGhLabel;
+                accLabels[1].textContent = t.accNameLabel;
+                accLabels[2].textContent = t.accCodeLabel;
+                accLabels[3].textContent = t.accWeekLabel;
+            }
+            const nameInp = document.getElementById('modal-displayname-input');
+            if (nameInp) nameInp.placeholder = t.accNamePlaceholder;
+            setTxt('#modal-current-week + p span', t.accAutoCheckHint);
+            setTxt('#accounts-modal h4', t.accPortalsTitle);
+            setTxt('button[onclick="saveAccountsProfile()"]', t.saveSettingsBtn);
+            const accCloseBtns = document.querySelectorAll('#accounts-modal button[onclick="closeAccountsModal()"]');
+            if (accCloseBtns.length >= 2) accCloseBtns[1].textContent = t.closeBtn;
+
+            // 9. Translate Curriculum Data (Weeks 0-10) & Re-render
+            localizeCurriculumData(appState.lang);
             renderAll();
         };
 
@@ -2764,17 +3380,15 @@
             applyLanguage(nextLang);
         };
 
-        // 2. استدعاؤها أخيراً عند تحميل الصفحة
+        // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
             applyTheme();
-            renderAll();
+            applyLanguage(appState.lang || 'en');
             if (!appState.onboardingCompleted) {
                 openOnboardingModal('choice');
             }
             initFirebaseSync();
-            applyLanguage(appState.lang || 'en');
         });
-        
     </script>
 </body>
 </html>
