@@ -2047,6 +2047,7 @@
         function renderSidebarLevels() {
             const container = document.getElementById('levels-nav-list');
             container.innerHTML = '';
+            const t = UI_TRANSLATIONS[appState.lang];
 
             CS50X_DATA.forEach((level, idx) => {
                 const unlocked = isWeekUnlocked(idx);
@@ -2058,194 +2059,121 @@
                 btn.type = 'button';
                 btn.disabled = !unlocked;
                 btn.onclick = () => selectLevel(idx);
-
-                btn.className = `w-full text-right p-3 rounded-2xl transition-all flex items-center justify-between gap-3 ${
-                    isSelected
-                        ? 'bg-apple-blue text-white shadow-md shadow-apple-blue/25'
-                        : unlocked
-                            ? 'hover:bg-black/5 dark:hover:bg-white/5 text-apple-textLight dark:text-apple-textDark'
-                            : 'opacity-45 cursor-not-allowed'
-                }`;
+                btn.className = `w-full text-right html-[dir=ltr]:text-left p-3 rounded-2xl transition-all flex items-center justify-between gap-3 ${isSelected ? 'bg-apple-blue text-white shadow-md shadow-apple-blue/25' : unlocked ? 'hover:bg-black/5 dark:hover:bg-white/5 text-apple-textLight dark:text-apple-textDark' : 'opacity-45 cursor-not-allowed'}`;
 
                 btn.innerHTML = `
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold ${
-                            isSelected
-                                ? 'bg-white/20 text-white'
-                                : isDone
-                                    ? 'bg-apple-green/15 text-apple-green'
-                                    : 'bg-black/5 dark:bg-white/10 text-apple-blue dark:text-apple-blueDark'
-                        }">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold ${isSelected ? 'bg-white/20 text-white' : isDone ? 'bg-apple-green/15 text-apple-green' : 'bg-black/5 dark:bg-white/10 text-apple-blue dark:text-apple-blueDark'}">
                             ${!unlocked ? '<i class="fas fa-lock text-xs"></i>' : isDone ? '<i class="fas fa-check"></i>' : `<i class="fas ${level.icon}"></i>`}
                         </div>
                         <div class="truncate">
                             <div class="text-[11px] font-semibold ${isSelected ? 'text-white/80' : 'text-apple-secondary'}">
-                                المستوى ${level.week} • Week ${level.week}
+                                ${t.levelWord} ${level.week} • Week ${level.week}
                             </div>
                             <div class="text-xs font-extrabold truncate">${level.title}</div>
                         </div>
                     </div>
                     <div class="flex flex-col items-end flex-shrink-0">
-                        <span class="text-[11px] font-mono font-bold ${isSelected ? 'text-white' : isDone ? 'text-apple-green' : 'text-apple-secondary'}">
-                            ${progress}%
-                        </span>
+                        <span class="text-[11px] font-mono font-bold ${isSelected ? 'text-white' : isDone ? 'text-apple-green' : 'text-apple-secondary'}">${progress}%</span>
                         <div class="w-12 h-1.5 rounded-full ${isSelected ? 'bg-white/30' : 'bg-gray-200 dark:bg-white/10'} overflow-hidden mt-1">
                             <div class="h-full rounded-full ${isSelected ? 'bg-white' : isDone ? 'bg-apple-green' : 'bg-apple-blue'}" style="width: ${progress}%"></div>
                         </div>
                     </div>
                 `;
-
                 container.appendChild(btn);
-            });
-        }
-
-        window.selectLevel = function(weekIndex) {
-            if (!isWeekUnlocked(weekIndex)) {
-                showToast('أكمل 75% على الأقل من المستوى السابق لفتح هذا المستوى، أو أوقف قفل المستويات المتسلسل.');
-                return;
-            }
-            appState.activeWeek = weekIndex;
-            persistState();
-            renderSidebarLevels();
-            renderActiveLevelWorkspace();
-        };
-
-        window.switchTab = function(tabName) {
-            appState.activeTab = tabName;
-            persistState();
-            updateTabButtonsUI();
-        };
-
-        function updateTabButtonsUI() {
-            const tabs = ['lecture', 'checkpoints', 'psets', 'notes'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tab-btn-${t}`);
-                const sec = document.getElementById(`tab-content-${t}`);
-                if (!btn || !sec) return;
-
-                if (appState.activeTab === t) {
-                    btn.className = "tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-white dark:bg-apple-elevatedDark shadow-sm text-apple-textLight dark:text-white";
-                    sec.classList.remove('hidden');
-                } else {
-                    btn.className = "tab-segmented-btn py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-apple-secondary hover:text-apple-textLight dark:hover:text-white";
-                    sec.classList.add('hidden');
-                }
             });
         }
 
         function renderActiveLevelWorkspace() {
             const level = CS50X_DATA[appState.activeWeek] || CS50X_DATA[0];
             const progress = getWeekProgress(appState.activeWeek);
+            const t = UI_TRANSLATIONS[appState.lang];
 
-            // 1. Hero Header
-            document.getElementById('active-level-badge').textContent = `المستوى ${level.week} • Week ${level.week}`;
+            document.getElementById('active-level-badge').textContent = `${t.levelWord} ${level.week} • Week ${level.week}`;
             const statusEl = document.getElementById('active-level-status');
             if (progress === 100) {
-                statusEl.textContent = 'مكتمل بالكامل ✓';
+                statusEl.textContent = t.completed;
                 statusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-apple-green/15 text-apple-green';
             } else if (progress > 0) {
-                statusEl.textContent = 'قيد الدراسة والتنفيذ';
+                statusEl.textContent = t.inProgress;
                 statusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-apple-orange/15 text-apple-orange';
             } else {
-                statusEl.textContent = 'جاهز للبدء';
+                statusEl.textContent = t.readyToStart;
                 statusEl.className = 'px-3 py-1 rounded-full text-xs font-bold bg-apple-blue/15 text-apple-blue dark:text-apple-blueDark';
             }
 
             const levelTotalXP = level.checkpoints.reduce((a, c) => a + c.xp, 0) + level.psets.reduce((a, p) => a + p.xp, 0);
             document.getElementById('active-level-xp-badge').textContent = `+${levelTotalXP} XP`;
             document.getElementById('active-level-title').textContent = level.title;
-            document.getElementById('active-level-desc').textContent = level.description;
+            document.getElementById('active-level-desc').textContent = level.description || level.desc;
             document.getElementById('active-level-official-link').href = level.officialWeekUrl;
 
             document.getElementById('active-level-progress-bar').style.width = `${progress}%`;
             document.getElementById('active-level-progress-text').textContent = `${progress}%`;
 
-            // Concept pills
             const topicsContainer = document.getElementById('active-level-topics');
-            topicsContainer.innerHTML = level.topics.map(t =>
-                `<span class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-apple-bgLight dark:bg-apple-elevatedDark text-apple-secondary border border-black/5 dark:border-white/5">${t}</span>`
-            ).join('');
+            topicsContainer.innerHTML = (level.topics || []).map(topic => `<span class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-apple-bgLight dark:bg-apple-elevatedDark text-apple-secondary border border-black/5 dark:border-white/5">${topic}</span>`).join('');
 
-            // Tab Badges
             const doneCPs = level.checkpoints.filter(cp => appState.completedCheckpoints.includes(cp.id)).length;
             document.getElementById('tab-badge-checkpoints').textContent = `${doneCPs}/${level.checkpoints.length}`;
-
             const donePsetsCount = level.psets.filter(p => isPsetCompleted(p)).length;
             document.getElementById('tab-badge-psets').textContent = `${donePsetsCount}/${level.psets.length}`;
 
-            // 2. Lecture Video & Official Resources Tab
             const customUrl = appState.customVideoUrls[level.week] || '';
             const embedUrl = extractYoutubeEmbedUrl(customUrl, level.youtubeId);
             const iframe = document.getElementById('lecture-youtube-iframe');
-            if (iframe.src !== embedUrl) {
-                iframe.src = embedUrl;
-            }
+            if (iframe.src !== embedUrl) iframe.src = embedUrl;
             document.getElementById('custom-youtube-input').value = customUrl;
             document.getElementById('youtube-external-btn').href = customUrl || `https://www.youtube.com/watch?v=${level.youtubeId}`;
 
             const resourcesList = document.getElementById('official-resources-list');
             const w = level.week;
             const resources = [
-                { title: `صفحة الأسبوع ${w} الرسمية في هارفارد`, sub: `cs50.harvard.edu/x/weeks/${w}/`, icon: 'fa-building-columns', color: 'blue', url: level.officialWeekUrl },
-                { title: `ملخص المحاضرة الشامل (Lecture ${w} Notes)`, sub: 'شرح مكتوب لجميع الأمثلة والأفكار', icon: 'fa-book-open', color: 'green', url: w === 10 ? 'https://cs50.harvard.edu/x/weeks/10/' : `https://cs50.harvard.edu/x/notes/${w}/` },
-                { title: `الشرائح والأكواد المصدرية (Slides & Source Code)`, sub: 'ملفات الكود التي كتبها ديفيد مالان في المحاضرة', icon: 'fa-file-code', color: 'purple', url: level.officialWeekUrl },
-                { title: `صفحة وظائف الأسبوع (Problem Set ${w})`, sub: 'المواصفات الرسمية الكاملة على موقع الدورة', icon: 'fa-laptop-code', color: 'orange', url: w === 10 ? 'https://cs50.harvard.edu/x/project/' : `https://cs50.harvard.edu/x/psets/${w}/` }
+                { title: (appState.lang === 'ar') ? `صفحة الأسبوع ${w} الرسمية` : `Week ${w} Official Page`, sub: `cs50.harvard.edu/x/weeks/${w}/`, icon: 'fa-building-columns', color: 'blue', url: level.officialWeekUrl },
+                { title: (appState.lang === 'ar') ? `ملخص المحاضرة الشامل (Notes)` : `Comprehensive Notes`, sub: (appState.lang === 'ar') ? 'شرح مكتوب للأمثلة والأفكار' : 'Written explanations and code examples', icon: 'fa-book-open', color: 'green', url: w === 10 ? 'https://cs50.harvard.edu/x/weeks/10/' : `https://cs50.harvard.edu/x/notes/${w}/` },
+                { title: (appState.lang === 'ar') ? `الشرائح والأكواد (Source Code)` : `Slides & Source Code`, sub: (appState.lang === 'ar') ? 'ملفات الكود للمحاضرة' : 'Lecture source code files', icon: 'fa-file-code', color: 'purple', url: level.officialWeekUrl },
+                { title: (appState.lang === 'ar') ? `صفحة وظائف الأسبوع (Pset ${w})` : `Problem Set ${w} Page`, sub: (appState.lang === 'ar') ? 'المواصفات الرسمية الكاملة' : 'Official specifications', icon: 'fa-laptop-code', color: 'orange', url: w === 10 ? 'https://cs50.harvard.edu/x/project/' : `https://cs50.harvard.edu/x/psets/${w}/` }
             ];
 
             resourcesList.innerHTML = resources.map(r => `
                 <a href="${r.url}" target="_blank" rel="noopener noreferrer"
                    class="p-3 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:border-apple-blue border border-transparent transition flex items-center justify-between group">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-apple-${r.color}/15 text-apple-${r.color} flex items-center justify-center text-sm">
-                            <i class="fas ${r.icon}"></i>
-                        </div>
-                        <div>
+                        <div class="w-9 h-9 rounded-xl bg-apple-${r.color}/15 text-apple-${r.color} flex items-center justify-center text-sm"><i class="fas ${r.icon}"></i></div>
+                        <div class="text-left html-[dir=rtl]:text-right">
                             <div class="text-xs font-bold group-hover:text-apple-blue transition">${r.title}</div>
                             <div class="text-[11px] text-apple-secondary">${r.sub}</div>
                         </div>
                     </div>
-                    <i class="fas fa-arrow-up-left-from-square text-xs text-apple-secondary group-hover:text-apple-blue transition"></i>
+                    <i class="fas fa-arrow-up-right-from-square html-[dir=rtl]:fa-arrow-up-left-from-square text-xs text-apple-secondary group-hover:text-apple-blue transition"></i>
                 </a>
             `).join('');
 
-            // 3. Render Checkpoints Tab
             renderCheckpointsTab(level);
-
-            // 4. Render Problem Sets & Requirements Tab
             renderPsetsTab(level);
-
-            // 5. Render Notes Tab
             document.getElementById('level-notes-textarea').value = appState.weekNotes[level.week] || '';
-
             updateTabButtonsUI();
         }
 
         function renderCheckpointsTab(level) {
             const container = document.getElementById('checkpoints-list-container');
+            const t = UI_TRANSLATIONS[appState.lang];
             container.innerHTML = level.checkpoints.map((cp, index) => {
                 const checked = appState.completedCheckpoints.includes(cp.id);
                 return `
                     <div class="p-4 rounded-2xl bg-apple-bgLight dark:bg-apple-elevatedDark border ${checked ? 'border-apple-green/40 bg-apple-green/5' : 'border-transparent'} transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <label class="flex items-start sm:items-center gap-3.5 cursor-pointer flex-grow select-none">
-                            <input type="checkbox" class="apple-checkbox mt-0.5 sm:mt-0"
-                                   ${checked ? 'checked' : ''}
-                                   onchange="toggleCheckpoint('${cp.id}')">
-                            <div>
+                            <input type="checkbox" class="apple-checkbox mt-0.5 sm:mt-0" ${checked ? 'checked' : ''} onchange="toggleCheckpoint('${cp.id}')">
+                            <div class="text-left html-[dir=rtl]:text-right">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-apple-secondary">خطوة ${index + 1}</span>
+                                    <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-apple-secondary">${t.stepWord} ${index + 1}</span>
                                     <span class="text-sm font-extrabold ${checked ? 'line-through text-apple-secondary' : ''}">${cp.title}</span>
                                 </div>
                                 <p class="text-xs text-apple-secondary mt-1">${cp.desc}</p>
                             </div>
                         </label>
                         <div class="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-apple-orange/15 text-apple-orange">
-                                +${cp.xp} XP
-                            </span>
-                            <a href="${cp.url}" target="_blank" rel="noopener noreferrer"
-                               class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-cardDark hover:bg-apple-blue hover:text-white text-xs font-bold transition apple-card">
-                                فتح المورد ↗
-                            </a>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-apple-orange/15 text-apple-orange">+${cp.xp} XP</span>
                         </div>
                     </div>
                 `;
@@ -2254,6 +2182,7 @@
 
         function renderPsetsTab(level) {
             const container = document.getElementById('psets-cards-container');
+            const t = UI_TRANSLATIONS[appState.lang];
             container.innerHTML = level.psets.map((pset, idx) => {
                 const doneReqsCount = pset.requirements.filter(r => appState.completedReqs.includes(r.id)).length;
                 const totalReqsCount = pset.requirements.length;
@@ -2265,105 +2194,65 @@
                     const isReqChecked = appState.completedReqs.includes(req.id);
                     return `
                         <label class="flex items-start gap-3 p-3 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer transition select-none">
-                            <input type="checkbox" class="apple-checkbox apple-subcheck mt-0.5"
-                                   ${isReqChecked ? 'checked' : ''}
-                                   onchange="toggleRequirement('${req.id}', '${pset.id}')">
-                            <span class="text-xs leading-relaxed font-medium ${isReqChecked ? 'line-through text-apple-secondary' : ''}">
-                                ${req.text}
-                            </span>
+                            <input type="checkbox" class="apple-checkbox apple-subcheck mt-0.5" ${isReqChecked ? 'checked' : ''} onchange="toggleRequirement('${req.id}', '${pset.id}')">
+                            <span class="text-xs leading-relaxed font-medium text-left html-[dir=rtl]:text-right ${isReqChecked ? 'line-through text-apple-secondary' : ''}">${req.text}</span>
                         </label>
                     `;
                 }).join('');
 
                 return `
                     <article class="bg-white dark:bg-apple-cardDark rounded-3xl p-6 apple-card space-y-5 ${fullyDone ? 'ring-2 ring-apple-green/50' : ''}">
-                        <!-- Pset Chapter Header -->
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-white/10">
-                            <div class="space-y-1.5">
+                            <div class="space-y-1.5 text-left html-[dir=rtl]:text-right">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-${pset.typeBadgeColor}/15 text-apple-${pset.typeBadgeColor}">
-                                        فصل الوظيفة ${idx + 1} • ${pset.type}
+                                        ${t.psetChapter} ${idx + 1} • ${t.mandatory}
                                     </span>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-apple-orange/15 text-apple-orange">
-                                        +${pset.xp} XP
-                                    </span>
-                                    ${fullyDone ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-green/15 text-apple-green"><i class="fas fa-check-circle ml-1"></i>تم إنجاز وتسليم الوظيفة</span>` : ''}
+                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-apple-orange/15 text-apple-orange">+${pset.xp} XP</span>
+                                    ${fullyDone ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-apple-green/15 text-apple-green"><i class="fas fa-check-circle ml-1"></i>${t.completedAndSubmitted}</span>` : ''}
                                 </div>
                                 <h4 class="text-xl font-black">${pset.name}</h4>
                                 <p class="text-xs text-apple-secondary leading-relaxed max-w-3xl">${pset.summary}</p>
                             </div>
-
-                            <!-- Official Spec Link & Mark All Button -->
                             <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
-                                <a href="${pset.specUrl}" target="_blank" rel="noopener noreferrer"
-                                   class="px-4 py-2.5 rounded-2xl bg-apple-blue hover:bg-blue-600 text-white text-xs font-bold transition shadow-sm shadow-apple-blue/20 flex items-center gap-2">
-                                    <span>متطلبات الوظيفة في الموقع الرسمي</span>
-                                    <i class="fas fa-arrow-up-left-from-square text-[11px]"></i>
+                                <a href="${pset.specUrl}" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-2xl bg-apple-blue hover:bg-blue-600 text-white text-xs font-bold transition shadow-sm shadow-apple-blue/20 flex items-center gap-2">
+                                    <span>${t.officialSpec}</span>
+                                    <i class="fas fa-arrow-up-right-from-square html-[dir=rtl]:fa-arrow-up-left-from-square text-[11px]"></i>
                                 </a>
-                                <button onclick="toggleFullPsetDone('${pset.id}')"
-                                        class="px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${
-                                            fullyDone
-                                                ? 'bg-apple-green text-white'
-                                                : 'bg-black/5 dark:bg-white/10 hover:bg-apple-green/20 hover:text-apple-green'
-                                        }">
-                                    <i class="fas fa-check-double ml-1"></i>
-                                    ${fullyDone ? 'مكتملة' : 'تحديد الوظيفة كمكتملة'}
+                                <button onclick="toggleFullPsetDone('${pset.id}')" class="px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${fullyDone ? 'bg-apple-green text-white' : 'bg-black/5 dark:bg-white/10 hover:bg-apple-green/20 hover:text-apple-green'}">
+                                    <i class="fas fa-check-double ml-1"></i> ${fullyDone ? t.psetDone : t.markPsetDone}
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Progress Bar for This Pset's Requirements -->
-                        <div class="space-y-1.5">
+                        <div class="space-y-1.5 text-left html-[dir=rtl]:text-right">
                             <div class="flex items-center justify-between text-xs">
-                                <span class="font-bold">قائمة التحقق من متطلبات الوظيفة (Specification Checklist)</span>
+                                <span class="font-bold">${t.reqChecklist}</span>
                                 <span class="font-mono font-bold text-apple-blue dark:text-apple-blueDark">${doneReqsCount}/${totalReqsCount} (${psetPercent}%)</span>
                             </div>
                             <div class="w-full h-2 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
                                 <div class="h-full rounded-full ${fullyDone ? 'bg-apple-green' : 'bg-apple-blue'} transition-all duration-500" style="width: ${psetPercent}%"></div>
                             </div>
                         </div>
-
-                        <!-- Sub-Requirements Interactive Checklist -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                            ${reqsHtml}
-                        </div>
-
-                        <!-- Terminal Commands (check50 & submit50) + Personal Repo Solution Link -->
-                        <div class="pt-3 border-t border-gray-100 dark:border-white/10 grid grid-cols-1 lg:grid-cols-2 gap-3">
-                            <!-- check50 box -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">${reqsHtml}</div>
+                        <div class="pt-3 border-t border-gray-100 dark:border-white/10 grid grid-cols-1 lg:grid-cols-2 gap-3 text-left html-[dir=rtl]:text-right">
                             <div class="p-3 rounded-2xl bg-apple-bgLight dark:bg-black/50 border border-black/5 dark:border-white/5 flex items-center justify-between gap-2">
                                 <div class="min-w-0">
-                                    <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">أمر الفحص الآلي (check50)</div>
+                                    <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">${t.checkCmd}</div>
                                     <code class="text-xs font-mono text-apple-green block truncate" dir="ltr">${pset.checkCmd}</code>
                                 </div>
-                                <button onclick="copyCommandText('${pset.checkCmd.replace(/'/g, "\\'")}')"
-                                        class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card">
-                                    <i class="fas fa-copy ml-1"></i> نسخ
-                                </button>
+                                <button onclick="copyCommandText('${(pset.checkCmd || "").replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card"><i class="fas fa-copy ml-1"></i> ${t.copyBtn}</button>
                             </div>
-
-                            <!-- submit50 box -->
                             <div class="p-3 rounded-2xl bg-apple-bgLight dark:bg-black/50 border border-black/5 dark:border-white/5 flex items-center justify-between gap-2">
                                 <div class="min-w-0">
-                                    <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">أمر التسليم الرسمي (submit50)</div>
+                                    <div class="text-[10px] font-bold uppercase text-apple-secondary mb-0.5">${t.submitCmd}</div>
                                     <code class="text-xs font-mono text-apple-blue dark:text-apple-blueDark block truncate" dir="ltr">${pset.submitCmd}</code>
                                 </div>
-                                <button onclick="copyCommandText('${pset.submitCmd.replace(/'/g, "\\'")}')"
-                                        class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card">
-                                    <i class="fas fa-copy ml-1"></i> نسخ
-                                </button>
+                                <button onclick="copyCommandText('${(pset.submitCmd || "").replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-apple-elevatedDark hover:bg-apple-blue hover:text-white text-xs font-bold transition flex-shrink-0 apple-card"><i class="fas fa-copy ml-1"></i> ${t.copyBtn}</button>
                             </div>
                         </div>
-
-                        <!-- Student Solution Link Input -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
-                            <span class="text-xs text-apple-secondary flex items-center gap-1.5 whitespace-nowrap">
-                                <i class="fab fa-github"></i> رابط حلك على GitHub أو ملاحظة التسليم:
-                            </span>
-                            <input type="text" value="${savedRepoLink}"
-                                   onchange="savePsetRepoLink('${pset.id}', this.value)"
-                                   placeholder="https://github.com/me50/USERNAME/tree/cs50/problems/2024/x/..."
-                                   class="flex-grow px-3 py-1.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark text-xs font-mono outline-none border border-transparent focus:border-apple-blue">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1 text-left html-[dir=rtl]:text-right">
+                            <span class="text-xs text-apple-secondary flex items-center gap-1.5 whitespace-nowrap"><i class="fab fa-github"></i> ${t.solutionLink}</span>
+                            <input type="text" value="${savedRepoLink}" onchange="savePsetRepoLink('${pset.id}', this.value)" placeholder="https://github.com/me50/USERNAME/..." class="flex-grow px-3 py-1.5 rounded-xl bg-apple-bgLight dark:bg-apple-elevatedDark text-xs font-mono outline-none border border-transparent focus:border-apple-blue">
                         </div>
                     </article>
                 `;
@@ -2685,11 +2574,32 @@
                 tabLecture: "Lecture & Files",
                 tabCheckpoints: "Checkpoints",
                 tabPsets: "Psets & Requirements",
-                tabNotes: "My Notes & Insights"
+                tabNotes: "My Notes & Insights",
+                // واجهات لوحة العمل
+                levelWord: "Level",
+                readyToStart: "Ready to start",
+                inProgress: "In Progress",
+                completed: "Completed ✓",
+                psetsHeaderTitle: "Official Problem Sets Specifications",
+                psetsHeaderDesc: "Each problem set is broken down into its official requirements with check50/submit50 commands.",
+                openVsCode: "Open VS Code",
+                checkGrades: "Check Grades",
+                psetChapter: "Pset Chapter",
+                mandatory: "Required",
+                completedAndSubmitted: "Completed & Submitted",
+                officialSpec: "Official Spec on CS50",
+                markPsetDone: "Mark as Completed",
+                psetDone: "Completed",
+                reqChecklist: "Specification Checklist",
+                checkCmd: "check50 Command",
+                submitCmd: "submit50 Command",
+                copyBtn: "Copy",
+                solutionLink: "GitHub Solution Link / Note:",
+                stepWord: "Step"
             },
             ar: {
                 toggleBtn: "English",
-                siteTitle: "CS50x Tracker",
+                siteTitle: "منصة التتبع CS50x",
                 siteSub: "مسار جامعة هارفارد لعلوم الحاسوب — نظام المستويات التفاعلي",
                 officialSite: "الموقع الرسمي CS50x",
                 cs50dev: "بيئة الأكواد cs50.dev",
@@ -2711,7 +2621,27 @@
                 tabLecture: "المحاضرة والملفات",
                 tabCheckpoints: "نقاط التفتيش",
                 tabPsets: "الوظائف ومتطلباتها",
-                tabNotes: "ملاحظاتي وأكبر الأفكار"
+                tabNotes: "ملاحظاتي وأكبر الأفكار",
+                levelWord: "المستوى",
+                readyToStart: "جاهز للبدء",
+                inProgress: "قيد الدراسة والتنفيذ",
+                completed: "مكتمل بالكامل ✓",
+                psetsHeaderTitle: "فصول الوظائف ومتطلباتها الرسمية (Problem Sets Specifications)",
+                psetsHeaderDesc: "كل وظيفة أدناه مقسمة إلى متطلباتها البرمجية الدقيقة المستوردة من موقع هارفارد مع أوامر الفحص والتسليم الجاهزة للنسخ.",
+                openVsCode: "فتح VS Code",
+                checkGrades: "التحقق من الدرجات",
+                psetChapter: "فصل الوظيفة",
+                mandatory: "إلزامي",
+                completedAndSubmitted: "تم إنجاز وتسليم الوظيفة",
+                officialSpec: "متطلبات الوظيفة في الموقع الرسمي",
+                markPsetDone: "تحديد الوظيفة كمكتملة",
+                psetDone: "مكتملة",
+                reqChecklist: "قائمة التحقق من متطلبات الوظيفة",
+                checkCmd: "أمر الفحص الآلي (check50)",
+                submitCmd: "أمر التسليم الرسمي (submit50)",
+                copyBtn: "نسخ",
+                solutionLink: "رابط حلك على GitHub أو ملاحظة التسليم:",
+                stepWord: "خطوة"
             }
         };
 
@@ -2753,17 +2683,14 @@
 
             const t = UI_TRANSLATIONS[lang];
 
-            // 1. زر تبديل اللغة
             const btn = document.getElementById('langToggleBtn');
             if (btn) btn.textContent = t.toggleBtn;
 
-            // أداة مساعدة لتحديث النصوص عبر المحددات
             const setTxt = (selector, text) => {
                 const el = document.querySelector(selector);
                 if (el && text !== undefined) el.textContent = text;
             };
 
-            // 2. الشريط العلوي (Header)
             setTxt('header p.text-apple-secondary', t.siteSub);
             const quickLinks = document.querySelectorAll('header .hidden.xl\\:flex a');
             if (quickLinks.length >= 4) {
@@ -2773,41 +2700,32 @@
                 quickLinks[3].childNodes[quickLinks[3].childNodes.length - 1].textContent = ' ' + t.submitPlatform;
             }
             setTxt('button[onclick*="openOnboardingModal"] span', t.onboardingBtn);
-            if (!appState.githubUsername) {
-                setTxt('#header-github-label', t.accountsBtn);
-            }
+            if (!appState.githubUsername) setTxt('#header-github-label', t.accountsBtn);
 
-            // 3. بطاقة حلقات الإنجاز (Achievements Card)
             setTxt('aside h2', t.ringsTitle);
             setTxt('aside h2 + p', t.ringsSub);
-            const asideLegends = document.querySelectorAll('aside .space-y-2 .flex-medium, aside .space-y-2 span.font-medium');
+            const asideLegends = document.querySelectorAll('aside .space-y-2 .font-medium');
             if (asideLegends.length >= 3) {
                 asideLegends[0].childNodes[asideLegends[0].childNodes.length - 1].textContent = ' ' + t.cpLabel;
                 asideLegends[1].childNodes[asideLegends[1].childNodes.length - 1].textContent = ' ' + t.psetsLabel;
                 asideLegends[2].childNodes[asideLegends[2].childNodes.length - 1].textContent = ' ' + t.reqsLabel;
             }
             const lockLabel = document.querySelector('aside .mt-4 span.text-apple-secondary');
-            if (lockLabel) {
-                lockLabel.childNodes[lockLabel.childNodes.length - 1].textContent = ' ' + t.lockMode;
-            }
+            if (lockLabel) lockLabel.childNodes[lockLabel.childNodes.length - 1].textContent = ' ' + t.lockMode;
 
-            // 4. خريطة المستويات (Levels Sidebar)
             setTxt('aside h3', t.levelsMap);
             const levelsCountEl = document.querySelector('aside h3 + span');
             if (levelsCountEl) levelsCountEl.textContent = t.levelsCount;
 
-            // 5. بطاقة المستوى الحالية (Hero Card)
             const progLabel = document.querySelector('#level-hero-card .text-xs.text-apple-secondary.mb-1');
             if (progLabel) progLabel.textContent = t.currentLevelProg;
             setTxt('#active-level-official-link span', t.harvardWeekPage);
 
-            // 6. أزرار التبويبات الأربعة (Tabs)
             setTxt('#tab-btn-lecture span', t.tabLecture);
             setTxt('#tab-btn-checkpoints span:first-of-type', t.tabCheckpoints);
             setTxt('#tab-btn-psets span:first-of-type', t.tabPsets);
             setTxt('#tab-btn-notes span', t.tabNotes);
 
-            // 7. محتوى تبويب المحاضرة والموارد
             setTxt('#video-section-title', (lang === 'ar') ? 'المحاضرة الرسمية (البث المباشر داخل المنصة)' : 'Official Lecture Video');
             setTxt('#video-section-title + p', (lang === 'ar') ? 'تقديم البروفيسور David J. Malan — جامعة هارفارد' : 'Prof. David J. Malan — Harvard University');
             setTxt('#youtube-external-btn', (lang === 'ar') ? ' فتح في يوتيوب' : ' Open in YouTube');
@@ -2820,7 +2738,16 @@
                 if (p) p.textContent = (lang === 'ar') ? 'روابط مباشرة للملاحظات والأكواد والشرائح' : 'Direct links to notes, code, and slides';
             }
 
-            // 8. تحديث أسماء المستويات داخل المصفوفة
+            // تحديث تبويب الوظائف
+            setTxt('#tab-content-psets h3 span', t.psetsHeaderTitle);
+            setTxt('#tab-content-psets h3 + p', t.psetsHeaderDesc);
+            const psetTabBtns = document.querySelectorAll('#tab-content-psets > div:first-child a');
+            if (psetTabBtns.length >= 2) {
+                psetTabBtns[0].childNodes[psetTabBtns[0].childNodes.length - 1].textContent = ' ' + t.openVsCode;
+                psetTabBtns[1].childNodes[psetTabBtns[1].childNodes.length - 1].textContent = ' ' + t.checkGrades;
+            }
+            setTxt('#tab-content-checkpoints button span', t.markAllDone);
+
             if (Array.isArray(CS50X_DATA)) {
                 CS50X_DATA.forEach((lvl, i) => {
                     if (WEEK_TITLES[lang] && WEEK_TITLES[lang][i]) {
@@ -2829,10 +2756,7 @@
                 });
             }
 
-            // إعادة رسم الواجهات النشطة
-            renderSidebarLevels();
-            renderActiveLevelWorkspace();
-            updateHeaderAndRings();
+            renderAll();
         };
 
         window.toggleLanguage = function() {
