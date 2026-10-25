@@ -274,7 +274,7 @@
     <div class="max-w-[1440px] w-full mx-auto px-4 lg:px-8 py-6 flex-grow flex flex-col lg:flex-row gap-6">
 
         <!-- Left/Right RTL Sidebar: Overall Rings + Levels Map -->
-        <aside class="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-5">
+        <aside class="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-5 lg:self-start lg:sticky lg:top-24">
             
             <!-- Apple Fitness Style Activity & Course Progress Card -->
             <div class="bg-white dark:bg-apple-cardDark rounded-3xl p-5 apple-card">
@@ -2186,7 +2186,9 @@
                             "Use at least one variable to store a changing value like score or time.",
                             "Create and use at least one custom block (My Blocks) taking at least one input.",
                             "Download the project (.sb3), upload via submit.cs50.io, and pass check50."
-                        ]
+                        ],
+                        checkCmd: "check50 cs50/problems/2024/x/scratch",
+                        submitCmd: "Upload .sb3 directly via: https://submit.cs50.io/upload/cs50/problems/2024/x/scratch"
                     }
                 ]
             },
@@ -2599,6 +2601,8 @@
                             ps.name = enLvl.psets[pIdx].name;
                             ps.type = enLvl.psets[pIdx].type;
                             ps.summary = enLvl.psets[pIdx].summary;
+                            if (enLvl.psets[pIdx].checkCmd) ps.checkCmd = enLvl.psets[pIdx].checkCmd;
+                            if (enLvl.psets[pIdx].submitCmd) ps.submitCmd = enLvl.psets[pIdx].submitCmd;
                             ps.requirements.forEach((req, rIdx) => {
                                 if (enLvl.psets[pIdx].reqs[rIdx]) {
                                     req.text = enLvl.psets[pIdx].reqs[rIdx];
@@ -2621,6 +2625,8 @@
                             ps.name = arLvl.psets[pIdx].name;
                             ps.type = arLvl.psets[pIdx].type;
                             ps.summary = arLvl.psets[pIdx].summary;
+                            if (arLvl.psets[pIdx].checkCmd) ps.checkCmd = arLvl.psets[pIdx].checkCmd;
+                            if (arLvl.psets[pIdx].submitCmd) ps.submitCmd = arLvl.psets[pIdx].submitCmd;
                             ps.requirements.forEach((req, rIdx) => {
                                 if (arLvl.psets[pIdx].requirements[rIdx]) {
                                     req.text = arLvl.psets[pIdx].requirements[rIdx].text;
@@ -2631,7 +2637,7 @@
                 }
             });
         }
-
+        
         function updateHeaderAndRings() {
             const metrics = calculateGlobalMetrics();
             const lang = appState.lang || 'en';
